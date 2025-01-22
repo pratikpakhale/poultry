@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { Model } from "mongoose";
-import { HTTP_STATUS } from "@utils/http";
+import { HTTP_STATUS } from "../utils/http";
 
 export const getAll =
   (model: Model<any>): RequestHandler =>

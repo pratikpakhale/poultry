@@ -13,19 +13,7 @@
     "noFallthroughCasesInSwitch": true,
     "allowUnreachableCode": true,
     "skipLibCheck": true,
-    "baseUrl": "src",
-    "paths": {
-      "@/*": ["*"],
-      "@config/*": ["config/*"],
-      "@types/*": ["types/*"],
-      "@utils/*": ["utils/*"],
-      "@services/*": ["services/*"],
-      "@models/*": ["models/*"],
-      "@controllers/*": ["controllers/*"],
-      "@middlewares/*": ["middlewares/*"],
-      "@routes/*": ["routes/*"],
-      "@validations/*": ["validations/*"]
-    }
+    "baseUrl": "src"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

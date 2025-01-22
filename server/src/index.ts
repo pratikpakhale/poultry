@@ -1,8 +1,8 @@
 import http from 'http';
 
 import app from './app';
-import env from '@config/env'
-import db from '@config/db';
+import env from "./config/env";
+import db from "./config/db";
 
 db;
 

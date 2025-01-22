@@ -1,6 +1,6 @@
 import Router from "express";
 
-import * as commonController from "@controllers/common";
+import * as commonController from "../controllers/common";
 import { Model } from "mongoose";
 
 const router = (model: Model<any>) => {

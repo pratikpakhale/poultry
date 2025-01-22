@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import formula from "@models/formula";
+import formula from "../models/formula";
 import material from "./material";
 
 const feedProductionSchema = new Schema(
