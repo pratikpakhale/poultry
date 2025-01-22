@@ -34,6 +34,7 @@ export default function RootLayout({
           sizes="16x16"
           href="/favicon-16x16.png"
         />
+        <title>Pakhale Poultry</title>
         <link rel="manifest" href="/manifest.json"></link>
       </head>
       <body className={inter.className}>
