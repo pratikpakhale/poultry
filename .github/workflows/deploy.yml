@@ -26,36 +26,10 @@ jobs:
         run: |
           rsync -avz -e "ssh -i ~/.ssh/ec2_key.pem" ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/poultry/
           ssh -i ~/.ssh/ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            sudo apt update
-            sudo apt install -y nginx
-
-            # Write a valid Nginx config
-            sudo tee /etc/nginx/sites-available/default > /dev/null << 'NGINX'
-            server {
-                listen 80;
-                server_name ${EC2_HOST};
-
-                location / {
-                    proxy_pass http://localhost:3000;
-                    proxy_http_version 1.1;
-                    proxy_set_header Upgrade $http_upgrade;
-                    proxy_set_header Connection "upgrade";
-                    proxy_set_header Host $host;
-                    proxy_cache_bypass $http_upgrade;
-                }
-            }
-            NGINX
-
-            # Test and restart Nginx
-            sudo nginx -t
-            sudo systemctl restart nginx
-            sudo systemctl status nginx  # Verify Nginx is active
-
-            # Deploy app
             mkdir -p /home/${{ secrets.EC2_USER }}/poultry/server
             echo "${{ secrets.DOCKER_COMPOSE_ENV }}" > /home/${{ secrets.EC2_USER }}/poultry/server/.env
             cd /home/${{ secrets.EC2_USER }}/poultry
             docker-compose down
             docker-compose up --build -d
-            docker ps -a  # Verify containers are running
+            docker ps
           EOF
