@@ -1,21 +1,16 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
+  "buildCommand": "npm run build",
   "builds": [
     {
-      "src": "src/**/*.ts",
-      "use": "@vercel/node",
-      "config": {
-        "typescript": {
-          "ignoreBuildErrors": true
-        }
-      }
+      "src": "server/dist/index.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "src/app.ts"
+      "src": "/(.)",
+      "dest": "server/dist/index.js"
     }
   ]
 }
