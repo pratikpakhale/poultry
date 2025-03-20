@@ -28,6 +28,7 @@ jobs:
           ssh -i ~/.ssh/ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             mkdir -p /home/${{ secrets.EC2_USER }}/poultry/server
             echo "${{ secrets.DOCKER_COMPOSE_ENV }}" > /home/${{ secrets.EC2_USER }}/poultry/server/.env
+            echo "${{ secrets.DOCKER_COMPOSE_ENV }}" > /home/${{ secrets.EC2_USER }}/poultry/client/.env
             cd /home/${{ secrets.EC2_USER }}/poultry
             docker-compose down
             docker-compose up --build -d
