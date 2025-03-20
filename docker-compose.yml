@@ -9,9 +9,6 @@ services:
       - NODE_ENV=production
     depends_on:
       - server
-    volumes:
-      - ./client:/app
-      - /app/node_modules
 
   server:
     build:
@@ -23,9 +20,6 @@ services:
       - ./server/.env
     environment:
       - NODE_ENV=production
-    volumes:
-      - ./server:/app
-      - /app/node_modules
 
 networks:
   default:
