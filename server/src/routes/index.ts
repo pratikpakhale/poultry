@@ -17,6 +17,7 @@ import manure from "../models/manure.sale";
 import material from "../models/material";
 import other from "../models/other";
 import vaccine from "../models/vaccine";
+import customer from "../models/customer";
 
 const ROUTER = [
   { model: birdMortality, path: "bird/mortality" },
@@ -33,6 +34,7 @@ const ROUTER = [
   { model: material, path: "material" },
   { model: other, path: "other" },
   { model: vaccine, path: "vaccine" },
+  { model: customer, path: "customer" },
 ];
 
 const router = Router();

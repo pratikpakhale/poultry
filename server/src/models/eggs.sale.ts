@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import flock from "./flock";
+import customer from "./customer";
 
 const eggsSales = new Schema(
   {
@@ -21,7 +22,13 @@ const eggsSales = new Schema(
       required: true,
     },
     customer: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Customer",
+      required: true,
+    },
+    amountPaid: {
+      type: Number,
+      default: 0,
     },
     deleted: {
       type: Boolean,
@@ -35,12 +42,29 @@ const eggsSales = new Schema(
 
 eggsSales.post("save", async function (doc, next) {
   await flock.updateOne({ _id: doc.flock }, { $inc: { eggs: -doc.quantity } });
+
+  const totalAmount = (doc.quantity * doc.rate) / 100;
+  const balanceChange = doc.amountPaid - totalAmount;
+
+  await customer.updateOne(
+    { _id: doc.customer },
+    { $inc: { balance: balanceChange } }
+  );
+
   next();
 });
 
 eggsSales.post("findOneAndUpdate", async function (doc, next) {
   if (doc?.deleted) {
     await flock.updateOne({ _id: doc.flock }, { $inc: { eggs: doc.quantity } });
+
+    const totalAmount = (doc.quantity * doc.rate) / 100;
+    const balanceChange = totalAmount - doc.amountPaid;
+
+    await customer.updateOne(
+      { _id: doc.customer },
+      { $inc: { balance: balanceChange } }
+    );
   }
   next();
 });

@@ -53,7 +53,13 @@ export default function EggManagement() {
     customer: "",
     quantity: "",
     rate: "",
+    amountPaid: "",
     flock: selectedFlock?._id,
+  });
+
+  const [customers, setCustomers] = useState([]);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
   });
 
   const [recentActivity, setRecentActivity] = useState<
@@ -64,6 +70,8 @@ export default function EggManagement() {
       quantity: number;
     }[]
   >([]);
+
+  const [selectedCustomerFilter, setSelectedCustomerFilter] = useState("all");
 
   const fetchProductions = useCallback(async () => {
     if (!selectedFlock) return;
@@ -79,11 +87,19 @@ export default function EggManagement() {
     if (!selectedFlock) return;
     const response = await getAll("eggsSale", {
       flock: selectedFlock?._id,
+      populate: "customer",
     });
     if (response) {
       setSales(response.data);
     }
   }, [selectedFlock]);
+
+  const fetchCustomers = useCallback(async () => {
+    const response = await getAll("customer");
+    if (response) {
+      setCustomers(response.data);
+    }
+  }, []);
 
   const fetchRecentActivity = useCallback(async () => {
     if (!selectedFlock) return;
@@ -98,7 +114,7 @@ export default function EggManagement() {
       ...sales.map((s: any) => ({
         date: new Date(s.date),
         category: "Sale",
-        additional: s.customer,
+        additional: s.customer?.name || "Unknown",
         quantity: Number(s.quantity),
       })),
     ];
@@ -110,11 +126,11 @@ export default function EggManagement() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      await Promise.all([fetchProductions(), fetchSales()]);
+      await Promise.all([fetchProductions(), fetchSales(), fetchCustomers()]);
       setIsLoading(false);
     };
     fetchData();
-  }, [selectedFlock, fetchProductions, fetchSales]);
+  }, [selectedFlock, fetchProductions, fetchSales, fetchCustomers]);
 
   useEffect(() => {
     fetchRecentActivity();
@@ -149,7 +165,26 @@ export default function EggManagement() {
     }
   };
 
+  const handleNewCustomer = async () => {
+    if (!newCustomer.name.trim()) {
+      alert("Please enter a customer name");
+      return;
+    }
+
+    const response = await create("customer", newCustomer);
+
+    if (response) {
+      fetchCustomers();
+      setNewCustomer({ name: "" });
+    }
+  };
+
   const handleNewSale = async () => {
+    const saleAmount = (Number(newSale.quantity) * Number(newSale.rate)) / 100;
+    if (!newSale.amountPaid) {
+      newSale.amountPaid = saleAmount.toString();
+    }
+
     const response = await create("eggsSale", {
       ...newSale,
       flock: selectedFlock?._id,
@@ -157,11 +192,13 @@ export default function EggManagement() {
 
     if (response) {
       fetchSales();
+      fetchCustomers();
       setNewSale({
         date: new Date().toISOString().split("T")[0],
         customer: "",
         quantity: "",
         rate: "",
+        amountPaid: "",
         flock: selectedFlock?._id,
       });
     }
@@ -175,7 +212,29 @@ export default function EggManagement() {
 
     if (response) {
       fetchSales();
+      fetchCustomers();
     }
+  };
+
+  const calculateTotalSale = () => {
+    if (!newSale.quantity || !newSale.rate) return 0;
+    return (Number(newSale.quantity) * Number(newSale.rate)) / 100;
+  };
+
+  const getPaymentStatus = (sale: any) => {
+    const totalAmount = (sale.quantity * sale.rate) / 100;
+    const difference = sale.amountPaid - totalAmount;
+
+    if (Math.abs(difference) < 0.01) return "Exact";
+    if (difference > 0) return `+${difference.toFixed(2)}`;
+    return difference.toFixed(2);
+  };
+
+  const getFilteredSales = () => {
+    if (selectedCustomerFilter === "all") return sales;
+    return sales.filter(
+      (sale: any) => sale.customer?._id === selectedCustomerFilter
+    );
   };
 
   return (
@@ -192,10 +251,11 @@ export default function EggManagement() {
           onValueChange={setCurrentTab}
           className="space-y-4"
         >
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="inventory">Inventory</TabsTrigger>
             <TabsTrigger value="production">Production</TabsTrigger>
             <TabsTrigger value="sales">Sales</TabsTrigger>
+            <TabsTrigger value="customers">Customers</TabsTrigger>
           </TabsList>
 
           <TabsContent value="inventory">
@@ -221,7 +281,7 @@ export default function EggManagement() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>Date</TableHead>
-                          <TableHead>Categort</TableHead>
+                          <TableHead>Category</TableHead>
                           <TableHead className="text-right">
                             Additional
                           </TableHead>
@@ -397,19 +457,29 @@ export default function EggManagement() {
 
                   <div className="space-y-2">
                     <Label htmlFor="customer">Customer</Label>
-                    <Input
-                      type="text"
-                      id="customer"
-                      placeholder="Enter customer name"
-                      value={newSale.customer}
-                      onChange={(e) =>
-                        setNewSale({
-                          ...newSale,
-                          customer: e.target.value,
-                        })
-                      }
-                      required
-                    />
+                    <div className="flex gap-2">
+                      <Select
+                        value={newSale.customer}
+                        onValueChange={(value) =>
+                          setNewSale({
+                            ...newSale,
+                            customer: value,
+                          })
+                        }
+                        required
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Select customer" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {customers.map((customer: any) => (
+                            <SelectItem key={customer._id} value={customer._id}>
+                              {customer.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -450,13 +520,27 @@ export default function EggManagement() {
                     <div className="flex justify-between">
                       <span>Total Amount</span>
                       <span className="font-bold">
-                        ₹
-                        {newSale.quantity && newSale.rate
-                          ? (Number(newSale.quantity) * Number(newSale.rate)) /
-                            100
-                          : 0}
+                        ₹{calculateTotalSale().toFixed(2)}
                       </span>
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="amountPaid">Amount Paid</Label>
+                    <Input
+                      type="number"
+                      id="amountPaid"
+                      placeholder={`Enter amount paid (default: ${calculateTotalSale().toFixed(
+                        2
+                      )})`}
+                      value={newSale.amountPaid}
+                      onChange={(e) =>
+                        setNewSale({
+                          ...newSale,
+                          amountPaid: e.target.value,
+                        })
+                      }
+                    />
                   </div>
 
                   <Button
@@ -487,6 +571,7 @@ export default function EggManagement() {
                         <TableHead className="text-right">Quantity</TableHead>
                         <TableHead className="text-right">Rate</TableHead>
                         <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="text-right">Payment</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -496,7 +581,7 @@ export default function EggManagement() {
                           <TableCell>
                             {format(new Date(sale.date), "dd/MM/yyyy")}
                           </TableCell>
-                          <TableCell>{sale.customer}</TableCell>
+                          <TableCell>{sale.customer?.name}</TableCell>
                           <TableCell className="text-right">
                             {sale.quantity}
                           </TableCell>
@@ -504,11 +589,19 @@ export default function EggManagement() {
                             ₹{sale.rate / 100}
                           </TableCell>
                           <TableCell className="text-right">
-                            ₹
-                            {(
-                              (sale.quantity * sale.rate) /
-                              100
-                            ).toLocaleString()}{" "}
+                            ₹{((sale.quantity * sale.rate) / 100).toFixed(2)}
+                          </TableCell>
+                          <TableCell
+                            className={`text-right ${
+                              getPaymentStatus(sale) !== "Exact"
+                                ? parseFloat(getPaymentStatus(sale)) < 0
+                                  ? "text-red-500"
+                                  : "text-green-500"
+                                : ""
+                            }`}
+                          >
+                            ₹{sale.amountPaid.toFixed(2)} (
+                            {getPaymentStatus(sale)})
                           </TableCell>
                           <TableCell className="text-right">
                             <Button
@@ -517,6 +610,150 @@ export default function EggManagement() {
                             >
                               <Trash2 size={16} color="red" />
                             </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              )}
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="customers">
+            <Card>
+              <CardHeader>
+                <CardTitle>Add New Customer</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <form className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="customer-name">Customer Name</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="text"
+                        id="customer-name"
+                        placeholder="Enter customer name"
+                        value={newCustomer.name}
+                        onChange={(e) =>
+                          setNewCustomer({
+                            ...newCustomer,
+                            name: e.target.value,
+                          })
+                        }
+                        className="flex-1"
+                        required
+                      />
+                      <Button onClick={handleNewCustomer}>Add</Button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Customer Balances</CardTitle>
+              </CardHeader>
+              {isLoading && <Spinner />}
+              {!isLoading && (
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Customer Name</TableHead>
+                        <TableHead className="text-right">Balance</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {customers.map((customer: any) => (
+                        <TableRow key={customer._id}>
+                          <TableCell>{customer.name}</TableCell>
+                          <TableCell
+                            className={`text-right ${
+                              customer.balance < 0
+                                ? "text-red-500"
+                                : customer.balance > 0
+                                ? "text-green-500"
+                                : ""
+                            }`}
+                          >
+                            ₹{customer.balance.toFixed(2)}
+                            {customer.balance < 0
+                              ? " (due)"
+                              : customer.balance > 0
+                              ? " (advance)"
+                              : ""}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              )}
+            </Card>
+
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Customer Sales History</CardTitle>
+              </CardHeader>
+              {isLoading && <Spinner />}
+              {!isLoading && (
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label htmlFor="customer-filter">Filter by Customer</Label>
+                    <Select
+                      value={selectedCustomerFilter}
+                      onValueChange={setSelectedCustomerFilter}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select customer" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Customers</SelectItem>
+                        {customers.map((customer: any) => (
+                          <SelectItem key={customer._id} value={customer._id}>
+                            {customer.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Table className="mt-4">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead className="text-right">Quantity</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="text-right">Payment</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {getFilteredSales().map((sale: any) => (
+                        <TableRow key={sale._id}>
+                          <TableCell>
+                            {format(new Date(sale.date), "dd/MM/yyyy")}
+                          </TableCell>
+                          <TableCell>{sale.customer?.name}</TableCell>
+                          <TableCell className="text-right">
+                            {sale.quantity}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            ₹{((sale.quantity * sale.rate) / 100).toFixed(2)}
+                          </TableCell>
+                          <TableCell
+                            className={`text-right ${
+                              getPaymentStatus(sale) !== "Exact"
+                                ? parseFloat(getPaymentStatus(sale)) < 0
+                                  ? "text-red-500"
+                                  : "text-green-500"
+                                : ""
+                            }`}
+                          >
+                            ₹{sale.amountPaid.toFixed(2)} (
+                            {getPaymentStatus(sale)})
                           </TableCell>
                         </TableRow>
                       ))}

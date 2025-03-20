@@ -15,6 +15,7 @@ const ROUTER = {
   material: "material",
   other: "other",
   vaccine: "vaccine",
+  customer: "customer",
 } as const;
 
 export const getAll = async (
