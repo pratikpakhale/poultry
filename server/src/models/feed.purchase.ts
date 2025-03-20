@@ -35,7 +35,7 @@ feedPurchaseSchema.index({ date: 1, material: 1 });
 feedPurchaseSchema.post("save", async function (doc, next) {
   await material.updateOne(
     { _id: doc.material },
-    { $inc: { stock: doc.quantity } }
+    { $inc: { quantity: doc.quantity } }
   );
   next();
 });
@@ -44,7 +44,7 @@ feedPurchaseSchema.post("findOneAndUpdate", async function (doc, next) {
   if (doc?.deleted) {
     await material.updateOne(
       { _id: doc.material },
-      { $inc: { stock: -doc.quantity } }
+      { $inc: { quantity: -doc.quantity } }
     );
   }
   next();
