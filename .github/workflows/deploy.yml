@@ -22,7 +22,7 @@ jobs:
         run: |
           sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version  # Verify installation
+          docker-compose --version
 
       - name: Build Docker images
         run: |
@@ -30,10 +30,13 @@ jobs:
 
       - name: Test Docker images
         run: |
-          docker-compose up -d
-          sleep 10  # Wait for services to start
-          curl --fail http://localhost:3000 || exit 1  # Basic health check
-          curl --fail http://localhost:3000/api/test || exit 1  # API check
+          # Create a dummy .env file for testing if needed
+          echo "NODE_ENV=test" > server/.env
+          # Override env_file for testing (optional, remove if your app can start without it)
+          docker-compose -f docker-compose.yml up -d
+          sleep 10
+          curl --fail http://localhost:3000 || exit 1
+          curl --fail http://localhost:3000/api/test || exit 1
           docker-compose down
 
   deploy:
@@ -56,10 +59,7 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
-          # Copy project files to EC2
           rsync -avz -e "ssh -i ~/.ssh/ec2_key.pem" ./ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/${{ secrets.EC2_USER }}/poultry/
-
-          # Write .env file and deploy on EC2
           ssh -i ~/.ssh/ec2_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             mkdir -p /home/${{ secrets.EC2_USER }}/poultry/server
             echo "${{ secrets.DOCKER_COMPOSE_ENV }}" > /home/${{ secrets.EC2_USER }}/poultry/server/.env
