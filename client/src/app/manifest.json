@@ -4,7 +4,6 @@
   "short_name": "Poultry",
   "description": "Pakhale Poultry Management",
   "start_url": "/",
-  "orientation": "portrait",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
