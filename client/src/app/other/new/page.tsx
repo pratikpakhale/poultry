@@ -18,7 +18,7 @@ export default function AddOtherExpensePage() {
     date: new Date().toISOString().split("T")[0],
     name: "",
     cost: "",
-    isFlockSpecific: false,
+    isFlockSpecific: true,
     flock: null,
   });
 
