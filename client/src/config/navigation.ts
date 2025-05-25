@@ -107,6 +107,28 @@ export const navigationConfig: NavItem[] = [
     title: "Feed",
     path: "/feed",
     icon: Wheat,
+    children: [
+      {
+        title: "Overview",
+        path: "/feed",
+        icon: Wheat,
+      },
+      {
+        title: "Inventory",
+        path: "/feed/inventory",
+        icon: Sprout,
+      },
+      {
+        title: "Production",
+        path: "/feed/production",
+        icon: Wheat,
+      },
+      {
+        title: "Expenses",
+        path: "/feed/expenses",
+        icon: DollarSign,
+      },
+    ],
   },
   {
     title: "Vaccines",

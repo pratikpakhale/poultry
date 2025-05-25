@@ -63,14 +63,14 @@ export default function Home() {
               <span className="text-lg font-medium">Feed</span>
             </Link>
             <div className="flex flex-col gap-2 ml-4">
-              <Link href="/feed/materials">
+              <Link href="/feed/inventory">
                 <Button variant="outline" size="sm" className="w-24">
-                  Materials
+                  Inventory
                 </Button>
               </Link>
-              <Link href="/feed/formulas">
+              <Link href="/feed/expenses">
                 <Button variant="outline" size="sm" className="w-24">
-                  Formulas
+                  Expenses
                 </Button>
               </Link>
               <Link href="/feed/production">

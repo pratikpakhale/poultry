@@ -1,14 +1,14 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { navigationConfig, NavItem } from "@/config/navigation";
+import { cn } from "@/lib/utils";
 import { useNavigation } from "@/store/navigation";
 import { UserButton } from "@clerk/nextjs";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, X } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 export function SideDrawer() {
   const { isDrawerOpen, closeDrawer } = useNavigation();
@@ -98,7 +98,19 @@ function NavItemComponent({
     pathname.startsWith(item.path)
   );
   const hasChildren = item.children && item.children.length > 0;
-  const isActive = pathname === item.path || pathname.startsWith(item.path);
+
+  // Improved active state logic
+  const isExactMatch = pathname === item.path;
+  const isChildActive =
+    hasChildren &&
+    item.children?.some(
+      (child) => pathname === child.path || pathname.startsWith(child.path)
+    );
+  const isActive =
+    isExactMatch ||
+    (hasChildren &&
+      isChildActive &&
+      !pathname.includes("/", item.path.length + 1));
 
   const handleExpand = (e: React.MouseEvent) => {
     if (hasChildren) {
@@ -114,7 +126,7 @@ function NavItemComponent({
         className={cn(
           "flex items-center justify-between py-2 px-3 rounded-md text-sm",
           "hover:bg-muted transition-colors duration-200",
-          isActive && !hasChildren ? "bg-muted font-medium text-primary" : "",
+          isActive ? "bg-muted font-medium text-primary" : "",
           depth > 0 ? "pl-[calc(0.75rem*depth)]" : ""
         )}
         onClick={(e) => {
