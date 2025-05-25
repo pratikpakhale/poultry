@@ -1,6 +1,5 @@
 "use client";
 
-
 import DateRange from "@/components/date-range";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { addDays, format, getMonth, getWeek } from "date-fns";
@@ -94,7 +93,6 @@ export default function EggReports() {
       <header className="border-b">
         <h1 className="px-4 py-4 text-xl font-semibold">Bird Mortality</h1>
       </header>
-
 
       <DateRange
         startDate={startDate}

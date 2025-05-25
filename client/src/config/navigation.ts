@@ -1,18 +1,17 @@
 import {
+  Bird,
+  DollarSign,
+  Egg,
+  FileText,
+  Flame,
   Home,
   LineChart,
-  Settings,
-  Bird,
-  Egg,
-  Wheat,
-  Scroll,
   Pill,
-  DollarSign,
   Scale,
-  Flame,
-  Users,
+  Settings,
   Sprout,
-  FileText,
+  Users,
+  Wheat,
 } from "lucide-react";
 
 export type NavItem = {
@@ -81,6 +80,28 @@ export const navigationConfig: NavItem[] = [
     title: "Eggs",
     path: "/eggs",
     icon: Egg,
+    children: [
+      {
+        title: "Overview",
+        path: "/eggs",
+        icon: Egg,
+      },
+      {
+        title: "Production",
+        path: "/eggs/production",
+        icon: Egg,
+      },
+      {
+        title: "Sales",
+        path: "/eggs/sales",
+        icon: DollarSign,
+      },
+    ],
+  },
+  {
+    title: "Customers",
+    path: "/eggs/customers",
+    icon: Users,
   },
   {
     title: "Feed",

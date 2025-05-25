@@ -49,21 +49,23 @@ export function MainHeader({ className }: MainHeaderProps) {
       )}
     >
       <div className="flex items-center gap-2">
-        {showBackButton ? (
+        {/* Always show the hamburger menu */}
+        <button
+          onClick={toggleDrawer}
+          className="mr-2 p-2 rounded-full hover:bg-muted"
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        {/* Show back button on non-homepage */}
+        {showBackButton && (
           <button
             onClick={handleBack}
             className="mr-2 p-2 rounded-full hover:bg-muted"
             aria-label="Go back"
           >
             <ArrowLeft className="h-5 w-5" />
-          </button>
-        ) : (
-          <button
-            onClick={toggleDrawer}
-            className="mr-2 p-2 rounded-full hover:bg-muted"
-            aria-label="Open menu"
-          >
-            <Menu className="h-5 w-5" />
           </button>
         )}
 
