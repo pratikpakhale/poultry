@@ -8,7 +8,6 @@ import {
   LineChart,
   Pill,
   Scale,
-  Settings,
   Sprout,
   Users,
   Wheat,
@@ -27,6 +26,102 @@ export const navigationConfig: NavItem[] = [
     path: "/",
     icon: Home,
   },
+  // Daily Operations
+  {
+    title: "Birds",
+    path: "/birds",
+    icon: Bird,
+    children: [
+      {
+        title: "Purchases",
+        path: "/birds/buy",
+        icon: DollarSign,
+      },
+      {
+        title: "Sales",
+        path: "/birds/sell",
+        icon: DollarSign,
+      },
+      {
+        title: "Mortality",
+        path: "/birds/mortality",
+        icon: Scale,
+      },
+    ],
+  },
+  {
+    title: "Eggs",
+    path: "/eggs",
+    icon: Egg,
+    children: [
+      {
+        title: "Production",
+        path: "/eggs/production",
+        icon: Egg,
+      },
+      {
+        title: "Sales",
+        path: "/eggs/sales",
+        icon: DollarSign,
+      },
+    ],
+  },
+  {
+    title: "Feed",
+    path: "/feed",
+    icon: Wheat,
+    children: [
+      {
+        title: "Inventory",
+        path: "/feed/inventory",
+        icon: Sprout,
+      },
+      {
+        title: "Batch Production",
+        path: "/feed/production",
+        icon: Wheat,
+      },
+      {
+        title: "Buy Raw Materials",
+        path: "/feed/expenses",
+        icon: DollarSign,
+      },
+      {
+        title: "Manage Feed Formulas",
+        path: "/manage/feed-formulas",
+        icon: Wheat,
+      },
+      {
+        title: "Manage Raw Materials",
+        path: "/manage/materials",
+        icon: Sprout,
+      },
+    ],
+  },
+  {
+    title: "Vaccines",
+    path: "/vaccines",
+    icon: Pill,
+  },
+  {
+    title: "Manure",
+    path: "/manure",
+    icon: Flame,
+  },
+  // Customers
+  {
+    title: "Customers",
+    path: "/eggs/customers",
+    icon: Users,
+  },
+  // Setup/Config as top-level
+  {
+    title: "Flocks",
+    path: "/manage/flocks",
+    icon: Users,
+  },
+
+  // Reports
   {
     title: "Reports",
     path: "/reports",
@@ -49,119 +144,7 @@ export const navigationConfig: NavItem[] = [
       },
     ],
   },
-  {
-    title: "Manage",
-    path: "/manage",
-    icon: Settings,
-    children: [
-      {
-        title: "Flocks",
-        path: "/manage/flocks",
-        icon: Users,
-      },
-      {
-        title: "Feed Formulas",
-        path: "/manage/feed-formulas",
-        icon: Wheat,
-      },
-      {
-        title: "Materials",
-        path: "/manage/materials",
-        icon: Sprout,
-      },
-    ],
-  },
-  {
-    title: "Birds",
-    path: "/birds",
-    icon: Bird,
-    children: [
-      {
-        title: "Overview",
-        path: "/birds",
-        icon: Bird,
-      },
-      {
-        title: "Mortality",
-        path: "/birds/mortality",
-        icon: Scale,
-      },
-      {
-        title: "Purchases",
-        path: "/birds/buy",
-        icon: DollarSign,
-      },
-      {
-        title: "Sales",
-        path: "/birds/sell",
-        icon: DollarSign,
-      },
-    ],
-  },
-  {
-    title: "Eggs",
-    path: "/eggs",
-    icon: Egg,
-    children: [
-      {
-        title: "Overview",
-        path: "/eggs",
-        icon: Egg,
-      },
-      {
-        title: "Production",
-        path: "/eggs/production",
-        icon: Egg,
-      },
-      {
-        title: "Sales",
-        path: "/eggs/sales",
-        icon: DollarSign,
-      },
-    ],
-  },
-  {
-    title: "Customers",
-    path: "/eggs/customers",
-    icon: Users,
-  },
-  {
-    title: "Feed",
-    path: "/feed",
-    icon: Wheat,
-    children: [
-      {
-        title: "Overview",
-        path: "/feed",
-        icon: Wheat,
-      },
-      {
-        title: "Inventory",
-        path: "/feed/inventory",
-        icon: Sprout,
-      },
-      {
-        title: "Production",
-        path: "/feed/production",
-        icon: Wheat,
-      },
-      {
-        title: "Expenses",
-        path: "/feed/expenses",
-        icon: DollarSign,
-      },
-    ],
-  },
-  {
-    title: "Vaccines",
-    path: "/vaccines",
-    icon: Pill,
-  },
-  {
-    title: "Manure",
-    path: "/manure",
-    icon: Flame,
-  },
+  // Other
   {
     title: "Other",
     path: "/other",
