@@ -97,6 +97,16 @@ export default function Home() {
                   Mortality
                 </Button>
               </Link>
+              <Link href="/birds/buy">
+                <Button variant="outline" size="sm" className="w-full">
+                  Purchases
+                </Button>
+              </Link>
+              <Link href="/birds/sell">
+                <Button variant="outline" size="sm" className="w-full">
+                  Sales
+                </Button>
+              </Link>
             </div>
           </Card>
 

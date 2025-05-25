@@ -75,6 +75,28 @@ export const navigationConfig: NavItem[] = [
     title: "Birds",
     path: "/birds",
     icon: Bird,
+    children: [
+      {
+        title: "Overview",
+        path: "/birds",
+        icon: Bird,
+      },
+      {
+        title: "Mortality",
+        path: "/birds/mortality",
+        icon: Scale,
+      },
+      {
+        title: "Purchases",
+        path: "/birds/buy",
+        icon: DollarSign,
+      },
+      {
+        title: "Sales",
+        path: "/birds/sell",
+        icon: DollarSign,
+      },
+    ],
   },
   {
     title: "Eggs",
