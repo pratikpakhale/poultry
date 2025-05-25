@@ -26,6 +26,14 @@ interface ActivityItem {
   quantity: number;
 }
 
+type Production = { date: string | Date; quantity: number; type: string };
+type Sale = {
+  date: string | Date;
+  quantity: number;
+  rate: number;
+  customer?: { name?: string };
+};
+
 export default function EggManagement() {
   const router = useRouter();
   const { selectedFlock } = useFlocks();
@@ -55,13 +63,13 @@ export default function EggManagement() {
     const sales = salesResponse?.data || [];
 
     const combinedActivity = [
-      ...productions.map((p: any) => ({
+      ...productions.map((p: Production) => ({
         date: new Date(p.date),
         category: "Production",
         additional: p.type === "normal" ? "Normal" : "Cracked",
         quantity: Number(p.quantity),
       })),
-      ...sales.map((s: any) => ({
+      ...sales.map((s: Sale) => ({
         date: new Date(s.date),
         category: "Sale",
         additional: s.customer?.name || "Unknown",

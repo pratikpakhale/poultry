@@ -1,8 +1,8 @@
 "use client";
 
 import DateRange from "@/components/date-range";
-import { useFlocks } from "@/store/flocks";
-import { addDays } from "date-fns";
+import { Card, CardContent } from "@/components/ui/card";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import {
   Select,
   SelectContent,
@@ -10,13 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import FarmSettings, { FarmSettingsState } from "./settings";
+import { Spinner } from "@/components/ui/spinner";
 import { getAll } from "@/lib/api";
 import DateGrouper from "@/lib/date-group";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { addDays } from "date-fns";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -25,7 +24,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Spinner } from "@/components/ui/spinner";
+import FarmSettings, { FarmSettingsState } from "./settings";
+
+type Purchase = { date: Date; amount: number };
+type Sale = { date: Date; amount: number };
 
 export default function Finances() {
   const [startDate, setStartDate] = useState(addDays(new Date(), -7));
@@ -53,15 +55,15 @@ export default function Finances() {
 
   const [flocks, setFlocks] = useState([]);
 
-  const [birdPurchases, setBirdPurchases] = useState([]);
-  const [feedPurchases, setFeedPurchases] = useState([]);
-  const [vaccines, setVaccines] = useState([]);
-  const [others, setOthers] = useState([]);
+  const [birdPurchases, setBirdPurchases] = useState<Purchase[]>([]);
+  const [feedPurchases, setFeedPurchases] = useState<Purchase[]>([]);
+  const [vaccines, setVaccines] = useState<Purchase[]>([]);
+  const [others, setOthers] = useState<Purchase[]>([]);
 
-  const [birdSales, setBirdSales] = useState([]);
-  const [eggsSales, setEggsSales] = useState([]);
-  const [feedSales, setFeedSales] = useState([]);
-  const [manures, setManures] = useState([]);
+  const [birdSales, setBirdSales] = useState<Sale[]>([]);
+  const [eggsSales, setEggsSales] = useState<Sale[]>([]);
+  const [feedSales, setFeedSales] = useState<Sale[]>([]);
+  const [manures, setManures] = useState<Sale[]>([]);
 
   const fetchFlocks = useCallback(async () => {
     const response = await getAll("flock", {
@@ -77,10 +79,12 @@ export default function Finances() {
       flock: JSON.stringify(settings.flocks),
     });
     setBirdPurchases(
-      response.data.map((purchase: any) => ({
-        date: new Date(purchase.date),
-        amount: purchase.rate * purchase.quantity,
-      }))
+      response.data.map(
+        (purchase: { date: string; rate: number; quantity: number }) => ({
+          date: new Date(purchase.date),
+          amount: purchase.rate * purchase.quantity,
+        })
+      )
     );
   }, [startDate, endDate, settings.flocks]);
 
@@ -90,7 +94,7 @@ export default function Finances() {
       toDate: endDate,
     });
     setFeedPurchases(
-      response.data.map((purchase: any) => ({
+      response.data.map((purchase: { date: string; cost: number }) => ({
         date: new Date(purchase.date),
         amount: purchase.cost,
       }))
@@ -104,7 +108,7 @@ export default function Finances() {
       flock: JSON.stringify(settings.flocks),
     });
     setVaccines(
-      response.data.map((vaccine: any) => ({
+      response.data.map((vaccine: { date: string; cost: number }) => ({
         date: new Date(vaccine.date),
         amount: vaccine.cost,
       }))
@@ -118,7 +122,7 @@ export default function Finances() {
       flock: JSON.stringify(settings.flocks),
     });
     setOthers(
-      response.data.map((other: any) => ({
+      response.data.map((other: { date: string; cost: number }) => ({
         date: new Date(other.date),
         amount: other.cost,
       }))
@@ -132,10 +136,12 @@ export default function Finances() {
       flock: JSON.stringify(settings.flocks),
     });
     setBirdSales(
-      response.data.map((sale: any) => ({
-        date: new Date(sale.date),
-        amount: sale.rate * sale.quantity,
-      }))
+      response.data.map(
+        (sale: { date: string; rate: number; quantity: number }) => ({
+          date: new Date(sale.date),
+          amount: sale.rate * sale.quantity,
+        })
+      )
     );
   }, [startDate, endDate, settings.flocks]);
 
@@ -146,10 +152,12 @@ export default function Finances() {
       flock: JSON.stringify(settings.flocks),
     });
     setEggsSales(
-      response.data.map((sale: any) => ({
-        date: new Date(sale.date),
-        amount: (sale.rate * sale.quantity) / 100,
-      }))
+      response.data.map(
+        (sale: { date: string; rate: number; quantity: number }) => ({
+          date: new Date(sale.date),
+          amount: (sale.rate * sale.quantity) / 100,
+        })
+      )
     );
   }, [startDate, endDate, settings.flocks]);
 
@@ -159,7 +167,7 @@ export default function Finances() {
       toDate: endDate,
     });
     setFeedSales(
-      response.data.map((sale: any) => ({
+      response.data.map((sale: { date: string; cost: number }) => ({
         date: new Date(sale.date),
         amount: sale.cost,
       }))
@@ -173,10 +181,12 @@ export default function Finances() {
       flock: JSON.stringify(settings.flocks),
     });
     setManures(
-      response.data.map((manure: any) => ({
-        date: new Date(manure.date),
-        amount: manure.quantity * manure.rate,
-      }))
+      response.data.map(
+        (manure: { date: string; quantity: number; rate: number }) => ({
+          date: new Date(manure.date),
+          amount: manure.quantity * manure.rate,
+        })
+      )
     );
   }, [startDate, endDate, settings.flocks]);
 
@@ -214,41 +224,47 @@ export default function Finances() {
 
   const birdPurchaseDataSource = useMemo(() => {
     if (!settings.expenses.birdPurchase) return [];
-    return new DateGrouper<any>(birdPurchases, "amount").group(group, "sum");
+    return new DateGrouper<Purchase>(birdPurchases, "amount").group(
+      group,
+      "sum"
+    );
   }, [group, settings.expenses.birdPurchase, birdPurchases]);
 
   const feedPurchaseDataSource = useMemo(() => {
     if (!settings.expenses.feedPurchase) return [];
-    return new DateGrouper<any>(feedPurchases, "amount").group(group, "sum");
+    return new DateGrouper<Purchase>(feedPurchases, "amount").group(
+      group,
+      "sum"
+    );
   }, [group, settings.expenses.feedPurchase, feedPurchases]);
 
   const vaccineDataSource = useMemo(() => {
     if (!settings.expenses.vaccine) return [];
-    return new DateGrouper<any>(vaccines, "amount").group(group, "sum");
+    return new DateGrouper<Purchase>(vaccines, "amount").group(group, "sum");
   }, [group, settings.expenses.vaccine, vaccines]);
 
   const otherDataSource = useMemo(() => {
     if (!settings.expenses.other) return [];
-    return new DateGrouper<any>(others, "amount").group(group, "sum");
+    return new DateGrouper<Purchase>(others, "amount").group(group, "sum");
   }, [group, settings.expenses.other, others]);
   const birdSaleDataSource = useMemo(() => {
     if (!settings.income.birdSale) return [];
-    return new DateGrouper<any>(birdSales, "amount").group(group, "sum");
+    return new DateGrouper<Sale>(birdSales, "amount").group(group, "sum");
   }, [group, settings.income.birdSale, birdSales]);
 
   const feedSaleDataSource = useMemo(() => {
     if (!settings.income.feedSale) return [];
-    return new DateGrouper<any>(feedSales, "amount").group(group, "sum");
+    return new DateGrouper<Sale>(feedSales, "amount").group(group, "sum");
   }, [group, settings.income.feedSale, feedSales]);
 
   const eggSaleDataSource = useMemo(() => {
     if (!settings.income.eggsSale) return [];
-    return new DateGrouper<any>(eggsSales, "amount").group(group, "sum");
+    return new DateGrouper<Sale>(eggsSales, "amount").group(group, "sum");
   }, [group, settings.income.eggsSale, eggsSales]);
 
   const manureDataSource = useMemo(() => {
     if (!settings.income.manure) return [];
-    return new DateGrouper<any>(manures, "amount").group(group, "sum");
+    return new DateGrouper<Sale>(manures, "amount").group(group, "sum");
   }, [group, settings.income.manure, manures]);
 
   const birdPurchaseTotal = useMemo(() => {
@@ -404,7 +420,12 @@ export default function Finances() {
       />
 
       <div className="px-4">
-        <Select value={group} onValueChange={(value) => setGroup(value as any)}>
+        <Select
+          value={group}
+          onValueChange={(value) =>
+            setGroup(value as "daily" | "weekly" | "monthly")
+          }
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Group" />
           </SelectTrigger>

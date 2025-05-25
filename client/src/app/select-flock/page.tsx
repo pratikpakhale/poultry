@@ -1,13 +1,13 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
 import { FlockSelector } from "@/components/flock-selector";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { useFlocks } from "@/store/flocks";
+import { ArrowLeft, ArrowRight, Plus } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Plus, ArrowLeft } from "lucide-react";
 
 export default function SelectFlockPage() {
   const { selectedFlock, flocks, isLoading } = useFlocks();
@@ -61,7 +61,7 @@ export default function SelectFlockPage() {
 
         {flocks.length === 0 ? (
           <div className="text-center p-4 space-y-4">
-            <p className="mb-4">You don't have any active flocks yet.</p>
+            <p className="mb-4">You don&apos;t have any active flocks yet.</p>
             <Link href="/manage/flocks">
               <Button>
                 Create your first flock

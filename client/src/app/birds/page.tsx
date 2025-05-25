@@ -26,6 +26,10 @@ interface ActivityItem {
   quantity: number;
 }
 
+type Mortality = { date: string | Date; count: number; reason: string };
+type Purchase = { date: string | Date; quantity: number; rate: number };
+type Sale = { date: string | Date; quantity: number; rate: number };
+
 export default function BirdManagement() {
   const router = useRouter();
   const { selectedFlock } = useFlocks();
@@ -61,19 +65,19 @@ export default function BirdManagement() {
     const sales = salesResponse?.data || [];
 
     const combinedActivity = [
-      ...mortalities.map((m: any) => ({
+      ...mortalities.map((m: Mortality) => ({
         date: new Date(m.date),
         category: "Mortality",
         additional: "Loss",
-        quantity: Number(m.quantity),
+        quantity: Number(m.count),
       })),
-      ...purchases.map((p: any) => ({
+      ...purchases.map((p: Purchase) => ({
         date: new Date(p.date),
         category: "Purchase",
         additional: `₹${p.rate}/bird`,
         quantity: Number(p.quantity),
       })),
-      ...sales.map((s: any) => ({
+      ...sales.map((s: Sale) => ({
         date: new Date(s.date),
         category: "Sale",
         additional: `₹${s.rate}/bird`,

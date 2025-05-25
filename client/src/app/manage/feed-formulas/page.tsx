@@ -1,10 +1,8 @@
 "use client";
 
-import { BottomNav } from "@/components/bottom-nav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -13,15 +11,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Plus, Trash2, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { create, getAll, remove } from "@/lib/api";
+import { getAll, remove } from "@/lib/api";
+import { Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { Spinner } from "@/components/ui/spinner";
+import { useCallback, useEffect, useState } from "react";
+
+type FormulaMaterial = {
+  material: { _id: string; name: string; unit: string };
+  quantity: string;
+};
+type Formula = { _id: string; name: string; materials: FormulaMaterial[] };
 
 export default function FeedFormulas() {
   const [isLoading, setIsLoading] = useState(true);
-  const [formulas, setFormulas] = useState<any>([]);
+  const [formulas, setFormulas] = useState<Formula[]>([]);
 
   const fetchFormulas = useCallback(async () => {
     setIsLoading(true);
@@ -39,7 +42,7 @@ export default function FeedFormulas() {
 
   useEffect(() => {
     fetchFormulas();
-  }, []);
+  }, [fetchFormulas]);
 
   const handleDeleteFormula = async (id: string) => {
     try {
@@ -67,7 +70,7 @@ export default function FeedFormulas() {
 
       {!isLoading && (
         <div className="p-4 space-y-6">
-          {formulas.map((formula: any) => (
+          {formulas.map((formula: Formula) => (
             <Card key={formula._id}>
               <CardHeader className="flex flex-row items-center">
                 <CardTitle>{formula.name}</CardTitle>
@@ -89,7 +92,7 @@ export default function FeedFormulas() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {formula.materials.map((m: any) => (
+                    {formula.materials.map((m: FormulaMaterial) => (
                       <TableRow key={m.material?._id}>
                         <TableCell>{m.material.name}</TableCell>
                         <TableCell className="text-right">

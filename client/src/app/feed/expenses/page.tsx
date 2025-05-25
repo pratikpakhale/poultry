@@ -86,7 +86,8 @@ export default function FeedExpensesPage() {
           {isLoading && <Spinner />}
           {!isLoading && purchases.length === 0 && (
             <p className="text-center py-4 text-muted-foreground">
-              No purchase records found. Click "Add New" to record a purchase.
+              No purchase records found. Click &quot;Add New&quot; to record a
+              purchase.
             </p>
           )}
           {!isLoading && purchases.length > 0 && (

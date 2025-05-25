@@ -18,11 +18,13 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+type Vaccine = { _id: string; date: string | Date; name: string; cost: number };
+
 export default function VaccineManagement() {
   const router = useRouter();
   const { selectedFlock } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [vaccines, setVaccines] = useState([]);
+  const [vaccines, setVaccines] = useState<Vaccine[]>([]);
 
   const fetchVaccines = useCallback(async () => {
     if (!selectedFlock) return;
@@ -80,7 +82,8 @@ export default function VaccineManagement() {
             <CardContent>
               {vaccines.length === 0 && (
                 <p className="text-center py-4 text-muted-foreground">
-                  No vaccine records found. Click "Add New" to record a vaccine.
+                  No vaccine records found. Click &quot;Add New&quot; to record
+                  a vaccine.
                 </p>
               )}
               {vaccines.length > 0 && (
@@ -94,7 +97,7 @@ export default function VaccineManagement() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {vaccines.map((vaccine: any) => (
+                    {vaccines.map((vaccine: Vaccine) => (
                       <TableRow key={vaccine._id}>
                         <TableCell>
                           {format(new Date(vaccine.date), "dd/MM/yyyy")}

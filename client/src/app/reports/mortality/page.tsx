@@ -1,15 +1,6 @@
 "use client";
 
 import DateRange from "@/components/date-range";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { addDays, format, getMonth, getWeek } from "date-fns";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -17,8 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { addDays } from "date-fns";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { getAll } from "@/lib/api";
+import DateGrouper from "@/lib/date-group";
 import { useFlocks } from "@/store/flocks";
 import {
   Bar,
@@ -29,12 +31,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import DateGrouper from "@/lib/date-group";
 
 interface Mortality {
   date: Date;
   quantity: number;
+  [key: string]: unknown;
 }
 
 export default function EggReports() {
@@ -74,17 +75,16 @@ export default function EggReports() {
 
   const averageMortality = useMemo(() => {
     if (mortalityDataSource.length === 0) return 0;
-
     const total = mortalityDataSource.reduce(
       (sum, m) => sum + Number(m.quantity),
       0
     );
     return Number((total / mortalityDataSource.length).toFixed(2));
-  }, [mortalities]);
+  }, [mortalityDataSource]);
 
   const totalMortality = useMemo(() => {
     return mortalityDataSource.reduce((sum, m) => sum + Number(m.quantity), 0);
-  }, [mortalities]);
+  }, [mortalityDataSource]);
 
   console.log(mortalityDataSource);
 
@@ -102,7 +102,12 @@ export default function EggReports() {
       />
 
       <div className="px-4">
-        <Select value={group} onValueChange={(value) => setGroup(value as any)}>
+        <Select
+          value={group}
+          onValueChange={(value) =>
+            setGroup(value as "daily" | "weekly" | "monthly")
+          }
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Group" />
           </SelectTrigger>

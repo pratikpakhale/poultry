@@ -83,7 +83,8 @@ export default function FeedProductionPage() {
           {isLoading && <Spinner />}
           {!isLoading && productions.length === 0 && (
             <p className="text-center py-4 text-muted-foreground">
-              No production records found. Click "Add New" to record production.
+              No production records found. Click &quot;Add New&quot; to record
+              production.
             </p>
           )}
           {!isLoading && productions.length > 0 && (

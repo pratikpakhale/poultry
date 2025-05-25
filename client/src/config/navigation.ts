@@ -16,6 +16,7 @@ import {
 export type NavItem = {
   title: string;
   path: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   icon: React.ComponentType<any>;
   children?: NavItem[];
 };
@@ -162,7 +163,7 @@ export const getBreadcrumbItems = (path: string) => {
   // Build the breadcrumb items based on path segments
   let currentPath = "";
 
-  segments.forEach((segment, index) => {
+  segments.forEach((segment) => {
     currentPath += `/${segment}`;
 
     // Format the label (capitalize first letter, replace hyphens with spaces)

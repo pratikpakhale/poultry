@@ -1,17 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { create, getAll, update } from "@/lib/api";
+import { useFlocks } from "@/store/flocks";
 import { Plus } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import FlockCard from "./flock-card";
 import { AddFlock } from "./add-flock";
-import { Spinner } from "@/components/ui/spinner";
-import { useFlocks } from "@/store/flocks";
+import FlockCard from "./flock-card";
+
+type Flock = { _id: string; name: string; active: boolean; quantity: number };
+type FlockUpdate = { name?: string; active?: boolean; deleted?: boolean };
 
 export default function Flocks() {
   const [isLoading, setIsLoading] = useState(true);
-  const [flocks, setFlocks] = useState<any>([]);
+  const [flocks, setFlocks] = useState<Flock[]>([]);
   const [isAddingFlock, setIsAddingFlock] = useState(false);
   const { refreshFlocks: refreshGlobalFlocks } = useFlocks();
 
@@ -29,9 +32,9 @@ export default function Flocks() {
 
   useEffect(() => {
     fetchFlocks();
-  }, []);
+  }, [fetchFlocks]);
 
-  const handleFlockUpdate = async (id: string, data: any) => {
+  const handleFlockUpdate = async (id: string, data: FlockUpdate) => {
     try {
       await update("flock", id, data);
       fetchFlocks();
@@ -41,7 +44,7 @@ export default function Flocks() {
     }
   };
 
-  const handleNewFlock = async (data: any) => {
+  const handleNewFlock = async (data: FlockUpdate) => {
     try {
       await create("flock", data);
       setIsAddingFlock(false);
@@ -66,7 +69,7 @@ export default function Flocks() {
 
       {!isLoading && (
         <div className="p-4 space-y-4">
-          {flocks.map((flock: any) => (
+          {flocks.map((flock: Flock) => (
             <div key={flock._id}>
               <FlockCard
                 flock={{

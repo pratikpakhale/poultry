@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FlockRequired } from "@/components/flock-required";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -12,18 +12,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
 import { getAll, remove } from "@/lib/api";
 import { useFlocks } from "@/store/flocks";
-import { Spinner } from "@/components/ui/spinner";
+import { format } from "date-fns";
 import { Plus, Trash2 } from "lucide-react";
-import { FlockRequired } from "@/components/flock-required";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+interface EggSale {
+  _id: string;
+  date: string;
+  customer?: { _id: string; name: string };
+  quantity: number;
+  rate: number;
+  amountPaid: number;
+  flock: string;
+}
 
 export default function SalesPage() {
   const router = useRouter();
   const { selectedFlock, refreshFlocks } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [sales, setSales] = useState([]);
+  const [sales, setSales] = useState<EggSale[]>([]);
 
   const fetchSales = useCallback(async () => {
     if (!selectedFlock) return;
@@ -56,7 +66,7 @@ export default function SalesPage() {
     }
   };
 
-  const getPaymentStatus = (sale: any) => {
+  const getPaymentStatus = (sale: EggSale) => {
     const totalAmount = (sale.quantity * sale.rate) / 100;
     const difference = sale.amountPaid - totalAmount;
 
@@ -91,7 +101,8 @@ export default function SalesPage() {
             {isLoading && <Spinner />}
             {!isLoading && sales.length === 0 && (
               <p className="text-center py-4 text-muted-foreground">
-                No sales records found. Click "Add New Sale" to record a sale.
+                No sales records found. Click &quot;Add New Sale&quot; to record
+                a sale.
               </p>
             )}
             {!isLoading && sales.length > 0 && (
@@ -109,7 +120,7 @@ export default function SalesPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sales.map((sale: any) => (
+                    {sales.map((sale: EggSale) => (
                       <TableRow key={sale._id}>
                         <TableCell>
                           {format(new Date(sale.date), "dd/MM/yyyy")}

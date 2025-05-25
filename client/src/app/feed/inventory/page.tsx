@@ -25,7 +25,6 @@ import { create, getAll, remove } from "@/lib/api";
 import { format } from "date-fns";
 import { AlertTriangle, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 interface Material {
@@ -49,7 +48,6 @@ interface Deduction {
 }
 
 export default function InventoryPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isDeductionsLoading, setIsDeductionsLoading] = useState(false);
   const [materials, setMaterials] = useState<Material[]>([]);

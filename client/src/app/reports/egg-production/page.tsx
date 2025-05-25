@@ -1,16 +1,6 @@
 "use client";
 
-
 import DateRange from "@/components/date-range";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { addDays, format, getMonth, getWeek } from "date-fns";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Card,
   CardContent,
@@ -18,8 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { addDays } from "date-fns";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { getAll } from "@/lib/api";
+import DateGrouper from "@/lib/date-group";
 import { useFlocks } from "@/store/flocks";
 import {
   Bar,
@@ -30,17 +31,17 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import DateGrouper from "@/lib/date-group";
 
 interface EggProduction {
   date: Date;
   quantity: number;
+  [key: string]: unknown;
 }
 
 interface EggSale {
   date: Date;
   rate: number;
+  [key: string]: unknown;
 }
 
 export default function EggReports() {
@@ -85,7 +86,7 @@ export default function EggReports() {
   useEffect(() => {
     fetchEggProductions();
     fetchEggSales();
-  }, [fetchEggProductions]);
+  }, [fetchEggProductions, fetchEggSales]);
 
   const productionDataSource = useMemo(() => {
     return new DateGrouper<EggProduction>(eggProductions, "quantity").group(
@@ -105,24 +106,23 @@ export default function EggReports() {
       0
     );
     return Number((total / productionDataSource.length).toFixed(2));
-  }, [eggProductions]);
+  }, [productionDataSource]);
 
   const totalProduction = useMemo(() => {
     return productionDataSource.reduce((sum, p) => sum + Number(p.quantity), 0);
-  }, [eggProductions]);
+  }, [productionDataSource]);
 
   const averageRate = useMemo(() => {
     if (salesDataSource.length === 0) return 0;
     const total = salesDataSource.reduce((sum, p) => sum + Number(p.rate), 0);
     return Number((total / salesDataSource.length).toFixed(2));
-  }, [eggSales]);
+  }, [salesDataSource]);
 
   return (
     <>
       <header className="border-b">
         <h1 className="px-4 py-4 text-xl font-semibold">Eggs Production</h1>
       </header>
-
 
       <DateRange
         startDate={startDate}
@@ -132,7 +132,12 @@ export default function EggReports() {
       />
 
       <div className="px-4">
-        <Select value={group} onValueChange={(value) => setGroup(value as any)}>
+        <Select
+          value={group}
+          onValueChange={(value) =>
+            setGroup(value as "daily" | "weekly" | "monthly")
+          }
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Group" />
           </SelectTrigger>

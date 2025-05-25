@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FlockRequired } from "@/components/flock-required";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -12,18 +12,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
 import { getAll, remove } from "@/lib/api";
 import { useFlocks } from "@/store/flocks";
-import { Spinner } from "@/components/ui/spinner";
+import { format } from "date-fns";
 import { Plus, Trash2 } from "lucide-react";
-import { FlockRequired } from "@/components/flock-required";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+
+type Production = {
+  _id: string;
+  date: string | Date;
+  quantity: number;
+  type: string;
+};
 
 export default function ProductionPage() {
   const router = useRouter();
   const { selectedFlock, refreshFlocks } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [productions, setProductions] = useState([]);
+  const [productions, setProductions] = useState<Production[]>([]);
 
   const fetchProductions = useCallback(async () => {
     if (!selectedFlock) return;
@@ -81,7 +88,7 @@ export default function ProductionPage() {
             {isLoading && <Spinner />}
             {!isLoading && productions.length === 0 && (
               <p className="text-center py-4 text-muted-foreground">
-                No production records found. Click "Add New" to record
+                No production records found. Click &quot;Add New&quot; to record
                 production.
               </p>
             )}
@@ -96,7 +103,7 @@ export default function ProductionPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {productions.map((production: any) => (
+                  {productions.map((production: Production) => (
                     <TableRow key={production._id}>
                       <TableCell>
                         {format(new Date(production.date), "dd/MM/yyyy")}

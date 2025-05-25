@@ -21,11 +21,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+type Customer = { _id: string; name: string };
+
 export default function AddSalePage() {
   const router = useRouter();
   const { selectedFlock, refreshFlocks } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [customers, setCustomers] = useState([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
 
   const [newSale, setNewSale] = useState({
     date: new Date().toISOString().split("T")[0],
@@ -160,7 +162,7 @@ export default function AddSalePage() {
                         <SelectValue placeholder="Select customer" />
                       </SelectTrigger>
                       <SelectContent>
-                        {customers.map((customer: any) => (
+                        {customers.map((customer: Customer) => (
                           <SelectItem key={customer._id} value={customer._id}>
                             {customer.name}
                           </SelectItem>

@@ -18,12 +18,13 @@ import { format } from "date-fns";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { BirdMortality } from "./types";
 
 export default function MortalityPage() {
   const router = useRouter();
   const { selectedFlock, refreshFlocks } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [mortalities, setMortalities] = useState([]);
+  const [mortalities, setMortalities] = useState<BirdMortality[]>([]);
 
   const fetchMortalities = useCallback(async () => {
     if (!selectedFlock) return;
@@ -81,7 +82,8 @@ export default function MortalityPage() {
             {isLoading && <Spinner />}
             {!isLoading && mortalities.length === 0 && (
               <p className="text-center py-4 text-muted-foreground">
-                No mortality records found. Click "Add New" to record mortality.
+                No mortality records found. Click &quot;Add New&quot; to record
+                mortality.
               </p>
             )}
             {!isLoading && mortalities.length > 0 && (
@@ -94,7 +96,7 @@ export default function MortalityPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mortalities.map((mortality: any) => (
+                  {mortalities.map((mortality: BirdMortality) => (
                     <TableRow key={mortality._id}>
                       <TableCell>
                         {format(new Date(mortality.date), "dd/MM/yyyy")}

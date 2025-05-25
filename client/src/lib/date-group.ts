@@ -2,7 +2,7 @@ import { format, getMonth, getWeek } from "date-fns";
 
 interface DateBased {
   date: string | Date;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export default class DateGrouper<T extends DateBased> {
@@ -65,7 +65,10 @@ export default class DateGrouper<T extends DateBased> {
           }, 0);
         case "average":
           if (items.length === 0) return 0;
-          const total = items.reduce((sum, item) => sum + item[this.key], 0);
+          const total = items.reduce((sum, item) => {
+            const value = item[this.key];
+            return sum + (typeof value === "number" ? value : 0);
+          }, 0);
           return Number((total / items.length).toFixed(2));
         case "count":
           return items.length;

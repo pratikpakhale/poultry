@@ -1,13 +1,13 @@
 "use client";
 
+import { Check, Pencil, Trash2, Users, X } from "lucide-react";
 import { useState } from "react";
-import { Users, Pencil, Check, X, Trash2 } from "lucide-react";
 
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { DeleteFlock } from "./delete-flock";
 
 interface Flock {
@@ -17,9 +17,15 @@ interface Flock {
   birds: number;
 }
 
+interface FlockUpdate {
+  name?: string;
+  active?: boolean;
+  deleted?: boolean;
+}
+
 interface FlockCardProps {
   flock: Flock;
-  onUpdate: (id: string, data: any) => Promise<void>;
+  onUpdate: (id: string, data: FlockUpdate) => Promise<void>;
 }
 
 export default function FlockCard({ flock, onUpdate }: FlockCardProps) {

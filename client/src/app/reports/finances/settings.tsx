@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
@@ -44,7 +44,7 @@ export default function FarmSettings({
         newSettings.flocks = settings.flocks.filter((id) => id !== key);
       }
     } else {
-      (newSettings[section] as any)[key] = value;
+      (newSettings[section] as Record<string, unknown>)[key] = value;
     }
     onSettingsChange(newSettings);
   };
@@ -57,20 +57,25 @@ export default function FarmSettings({
           <CardTitle>Flocks</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {flocks.map((flock: any) => (
-            <div key={flock._id} className="flex items-center justify-between">
-              <Label htmlFor={`flock-${flock._id}`} className="flex flex-col">
-                <span className="text-base">{flock.name}</span>
-              </Label>
-              <Switch
-                id={`flock-${flock._id}`}
-                checked={flock.selected}
-                onCheckedChange={(checked) =>
-                  updateSettings("flocks", flock._id, checked)
-                }
-              />
-            </div>
-          ))}
+          {flocks.map(
+            (flock: { name: string; _id: string; selected?: boolean }) => (
+              <div
+                key={flock._id}
+                className="flex items-center justify-between"
+              >
+                <Label htmlFor={`flock-${flock._id}`} className="flex flex-col">
+                  <span className="text-base">{flock.name}</span>
+                </Label>
+                <Switch
+                  id={`flock-${flock._id}`}
+                  checked={flock.selected}
+                  onCheckedChange={(checked) =>
+                    updateSettings("flocks", flock._id, checked)
+                  }
+                />
+              </div>
+            )
+          )}
         </CardContent>
       </Card>
 

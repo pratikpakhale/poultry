@@ -18,12 +18,13 @@ import { format } from "date-fns";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { BirdSale } from "./types";
 
 export default function BirdSalesPage() {
   const router = useRouter();
   const { selectedFlock, refreshFlocks } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [sales, setSales] = useState([]);
+  const [sales, setSales] = useState<BirdSale[]>([]);
 
   const fetchSales = useCallback(async () => {
     if (!selectedFlock) return;
@@ -81,7 +82,8 @@ export default function BirdSalesPage() {
             {isLoading && <Spinner />}
             {!isLoading && sales.length === 0 && (
               <p className="text-center py-4 text-muted-foreground">
-                No sale records found. Click "Add New" to record a sale.
+                No sale records found. Click &quot;Add New&quot; to record a
+                sale.
               </p>
             )}
             {!isLoading && sales.length > 0 && (
@@ -96,7 +98,7 @@ export default function BirdSalesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {sales.map((sale: any) => (
+                  {sales.map((sale: BirdSale) => (
                     <TableRow key={sale._id}>
                       <TableCell>
                         {format(new Date(sale.date), "dd/MM/yyyy")}

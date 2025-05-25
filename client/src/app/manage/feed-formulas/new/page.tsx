@@ -27,20 +27,37 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+type Material = {
+  _id: string;
+  name: string;
+  unit: string;
+};
+
+type FormulaMaterial = {
+  material: string;
+  name: string;
+  quantity: string;
+  unit: string;
+};
+
+type Formula = {
+  name: string;
+  materials: FormulaMaterial[];
+};
+
 export default function AddFormula() {
   const router = useRouter();
 
-  const [flock, setFlock] = useState({
-    name: "",
-  });
   const [isLoading, setIsLoading] = useState(true);
-  const [materials, setMaterials] = useState<any>([]);
-  const [newFormula, setNewFormula] = useState<any>({
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [newFormula, setNewFormula] = useState<Formula>({
     name: "",
     materials: [],
   });
 
-  const [selectedMaterial, setSelectedMaterial] = useState<any>(null);
+  const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(
+    null
+  );
   const [selectedQuantity, setSelectedQuantity] = useState("");
 
   const fetchMaterials = useCallback(async () => {
@@ -57,9 +74,9 @@ export default function AddFormula() {
 
   useEffect(() => {
     fetchMaterials();
-  }, []);
+  }, [fetchMaterials]);
 
-  const handleNewFormula = async (data: any) => {
+  const handleNewFormula = async (data: Formula) => {
     try {
       if (data.materials.length === 0) {
         alert("Please add materials to the formula");
@@ -120,7 +137,7 @@ export default function AddFormula() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {newFormula.materials.map((material: any) => (
+                    {newFormula.materials.map((material: FormulaMaterial) => (
                       <TableRow key={material.material}>
                         <TableCell>{material.name}</TableCell>
                         <TableCell className="text-right">
@@ -134,7 +151,8 @@ export default function AddFormula() {
                               setNewFormula({
                                 ...newFormula,
                                 materials: newFormula.materials.filter(
-                                  (m: any) => m.material !== material.material
+                                  (m: FormulaMaterial) =>
+                                    m.material !== material.material
                                 ),
                               });
                             }}
@@ -165,9 +183,9 @@ export default function AddFormula() {
                   </Alert>
                 ) : (
                   !isLoading &&
-                  materials.some((material: any) => {
+                  materials.some((material: Material) => {
                     const usedMaterials = newFormula.materials.map(
-                      (m: any) => m.material
+                      (m: FormulaMaterial) => m.material
                     );
                     return !usedMaterials.includes(material._id);
                   }) && (
@@ -176,9 +194,10 @@ export default function AddFormula() {
                         required
                         value={selectedMaterial?._id || ""}
                         onValueChange={(value) => {
-                          setSelectedMaterial(
-                            materials.find((m: any) => m._id === value)
+                          const found = materials.find(
+                            (m: Material) => m._id === value
                           );
+                          setSelectedMaterial(found ?? null);
                         }}
                       >
                         <SelectTrigger className="w-full">
@@ -186,13 +205,13 @@ export default function AddFormula() {
                         </SelectTrigger>
                         <SelectContent>
                           {materials
-                            .filter((material: any) => {
+                            .filter((material: Material) => {
                               const usedMaterials = newFormula.materials.map(
-                                (m: any) => m.material
+                                (m: FormulaMaterial) => m.material
                               );
                               return !usedMaterials.includes(material._id);
                             })
-                            .map((material: any) => (
+                            .map((material: Material) => (
                               <SelectItem
                                 key={material._id}
                                 value={material._id}

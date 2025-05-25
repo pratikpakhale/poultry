@@ -31,6 +31,22 @@ interface ActivityItem {
   details: string;
 }
 
+type Production = {
+  _id: string;
+  date: string | Date;
+  formula?: { name?: string };
+};
+type Purchase = {
+  _id: string;
+  date: string | Date;
+  material?: { name?: string };
+};
+type Deduction = {
+  _id: string;
+  date: string | Date;
+  material?: { name?: string };
+};
+
 export default function FeedManagement() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -69,19 +85,19 @@ export default function FeedManagement() {
 
     // Combine and sort by date (newest first)
     const combinedActivity = [
-      ...productions.map((p: any) => ({
+      ...productions.map((p: Production) => ({
         date: new Date(p.date),
         type: "Production",
         details: p.formula?.name || "Unknown Formula",
         id: p._id,
       })),
-      ...purchases.map((p: any) => ({
+      ...purchases.map((p: Purchase) => ({
         date: new Date(p.date),
         type: "Purchase",
         details: p.material?.name || "Unknown Material",
         id: p._id,
       })),
-      ...deductions.map((d: any) => ({
+      ...deductions.map((d: Deduction) => ({
         date: new Date(d.date),
         type: "Deduction",
         details: d.material?.name || "Unknown Material",
@@ -94,14 +110,14 @@ export default function FeedManagement() {
     setIsLoading(false);
   }, []);
 
-  const fetchAll = () => {
+  const fetchAll = useCallback(() => {
     fetchMaterials();
     fetchRecentActivity();
-  };
+  }, [fetchMaterials, fetchRecentActivity]);
 
   useEffect(() => {
     fetchAll();
-  }, [fetchMaterials, fetchRecentActivity]);
+  }, [fetchAll]);
 
   return (
     <>

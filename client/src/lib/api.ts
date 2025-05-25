@@ -20,9 +20,11 @@ const ROUTER = {
 
 export const getAll = async (
   model: keyof typeof ROUTER,
-  query?: Record<string, any>
+  query?: Record<string, unknown>
 ) => {
-  const q = query ? new URLSearchParams(query).toString() : "";
+  const q = query
+    ? new URLSearchParams(query as Record<string, string>).toString()
+    : "";
 
   const res = await fetch(`${BASE_URL}/${ROUTER[model]}?${q}`);
   return res.json();
@@ -35,7 +37,7 @@ export const getOne = async (model: keyof typeof ROUTER, id: string) => {
 
 export const create = async (
   model: keyof typeof ROUTER,
-  data: Record<string, any>
+  data: Record<string, unknown>
 ) => {
   const res = await fetch(`${BASE_URL}/${ROUTER[model]}`, {
     method: "POST",
@@ -51,7 +53,7 @@ export const create = async (
 export const update = async (
   model: keyof typeof ROUTER,
   id: string,
-  data: Record<string, any>
+  data: Record<string, unknown>
 ) => {
   const res = await fetch(`${BASE_URL}/${ROUTER[model]}/${id}`, {
     method: "PUT",

@@ -20,14 +20,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { create, getAll, remove } from "@/lib/api";
-import { Trash2, X } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+
+type Material = { _id: string; name: string; type: string; unit: string };
 
 export default function Materials() {
   const [isLoading, setIsLoading] = useState(true);
-  const [materials, setMaterials] = useState<any>([]);
+  const [materials, setMaterials] = useState<Material[]>([]);
 
-  const [newMaterial, setNewMaterial] = useState<any>({
+  const [newMaterial, setNewMaterial] = useState<Omit<Material, "_id">>({
     name: "",
     type: "",
     unit: "",
@@ -47,7 +49,7 @@ export default function Materials() {
 
   useEffect(() => {
     fetchMaterials();
-  }, []);
+  }, [fetchMaterials]);
 
   const handleNewMaterial = async () => {
     try {
@@ -142,7 +144,7 @@ export default function Materials() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {materials.map((material: any) => (
+                  {materials.map((material: Material) => (
                     <TableRow key={material._id}>
                       <TableCell>{material.name}</TableCell>
                       <TableCell>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FlockRequired } from "@/components/flock-required";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -12,12 +12,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
 import { getAll } from "@/lib/api";
 import { useFlocks } from "@/store/flocks";
-import { Spinner } from "@/components/ui/spinner";
+import { format } from "date-fns";
 import { Plus } from "lucide-react";
-import { FlockRequired } from "@/components/flock-required";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 // Define interfaces for type safety
 interface Customer {
@@ -105,8 +105,8 @@ export default function CustomersPage() {
             {isLoading && <Spinner />}
             {!isLoading && customers.length === 0 && (
               <p className="text-center py-4 text-muted-foreground">
-                No customers found. Click "Add New Customer" to add your first
-                customer.
+                No customers found. Click &quot;Add New Customer&quot; to add
+                your first customer.
               </p>
             )}
             {!isLoading && customers.length > 0 && (

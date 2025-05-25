@@ -18,11 +18,20 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+type ManureSale = {
+  _id: string;
+  date: string | Date;
+  customer: string;
+  type: string;
+  quantity: number;
+  rate: number;
+};
+
 export default function ManureManagement() {
   const router = useRouter();
   const { selectedFlock } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [sales, setSales] = useState([]);
+  const [sales, setSales] = useState<ManureSale[]>([]);
 
   const fetchSales = useCallback(async () => {
     if (!selectedFlock) return;
@@ -77,7 +86,8 @@ export default function ManureManagement() {
             <CardContent>
               {sales.length === 0 && (
                 <p className="text-center py-4 text-muted-foreground">
-                  No manure sales found. Click "Add New" to record a sale.
+                  No manure sales found. Click &quot;Add New&quot; to record a
+                  sale.
                 </p>
               )}
               {sales.length > 0 && (
@@ -94,7 +104,7 @@ export default function ManureManagement() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sales.map((sale: any) => (
+                    {sales.map((sale: ManureSale) => (
                       <TableRow key={sale._id}>
                         <TableCell>
                           {format(new Date(sale.date), "dd/MM/yyyy")}

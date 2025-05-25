@@ -18,11 +18,19 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
+type Expense = {
+  _id: string;
+  date: string | Date;
+  name: string;
+  flock?: { name: string };
+  cost: number;
+};
+
 export default function OtherExpenses() {
   const router = useRouter();
   const { selectedFlock } = useFlocks();
   const [isLoading, setIsLoading] = useState(false);
-  const [expenses, setExpenses] = useState([]);
+  const [expenses, setExpenses] = useState<Expense[]>([]);
 
   const fetchExpenses = useCallback(async () => {
     const response = await getAll("other", {
@@ -31,7 +39,7 @@ export default function OtherExpenses() {
     if (response) {
       setExpenses(response.data);
     }
-  }, [selectedFlock]);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,7 +84,8 @@ export default function OtherExpenses() {
             <CardContent>
               {expenses.length === 0 && (
                 <p className="text-center py-4 text-muted-foreground">
-                  No expenses found. Click "Add New" to record an expense.
+                  No expenses found. Click &quot;Add New&quot; to record an
+                  expense.
                 </p>
               )}
               {expenses.length > 0 && (
@@ -91,7 +100,7 @@ export default function OtherExpenses() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {expenses.map((expense: any) => (
+                    {expenses.map((expense: Expense) => (
                       <TableRow key={expense._id}>
                         <TableCell>
                           {format(new Date(expense.date), "dd/MM/yyyy")}
