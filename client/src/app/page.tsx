@@ -1,20 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { BottomNav } from "@/components/bottom-nav";
-import { FlockSelector } from "@/components/flock-selector";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useNavigationHistory } from "@/hooks/use-navigation";
 import {
   Bird,
   Egg,
-  Wheat,
+  Package,
   Syringe,
   TreesIcon as Tree,
-  Package,
+  Wheat,
 } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
+  // Register this page in navigation history
+  useNavigationHistory();
+
   return (
     <>
       <header className="border-b">
@@ -22,8 +24,6 @@ export default function Home() {
           Pakhale Poultry Management
         </h1>
       </header>
-
-      <FlockSelector />
 
       <div className="p-4 space-y-4">
         <Card className="p-4">
@@ -35,19 +35,19 @@ export default function Home() {
               <span className="text-lg font-medium">Eggs</span>
             </Link>
             <div className="flex flex-col gap-2 ml-4">
-              <Link href="/eggs?tab=inventory">
+              <Link href="/eggs/production">
                 <Button variant="outline" size="sm" className="w-24">
-                  Stock
+                  Production
                 </Button>
               </Link>
-              <Link href="/eggs?tab=production">
+              <Link href="/eggs/sales">
                 <Button variant="outline" size="sm" className="w-24">
-                  Add
+                  Sales
                 </Button>
               </Link>
-              <Link href="/eggs?tab=sales">
+              <Link href="/eggs/customers">
                 <Button variant="outline" size="sm" className="w-24">
-                  Sell
+                  Customers
                 </Button>
               </Link>
             </div>
@@ -63,19 +63,19 @@ export default function Home() {
               <span className="text-lg font-medium">Feed</span>
             </Link>
             <div className="flex flex-col gap-2 ml-4">
-              <Link href="/feed?tab=inventory">
+              <Link href="/feed/inventory">
                 <Button variant="outline" size="sm" className="w-24">
-                  Stock
+                  Inventory
                 </Button>
               </Link>
-              <Link href="/feed?tab=production">
+              <Link href="/feed/expenses">
                 <Button variant="outline" size="sm" className="w-24">
-                  Make
+                  Expenses
                 </Button>
               </Link>
-              <Link href="/feed?tab=expenses">
+              <Link href="/feed/production">
                 <Button variant="outline" size="sm" className="w-24">
-                  Buy
+                  Production
                 </Button>
               </Link>
             </div>
@@ -92,9 +92,19 @@ export default function Home() {
               <span className="text-sm font-medium">Birds</span>
             </Link>
             <div className="grid grid-cols-1 gap-2 mt-4 pt-4 border-t">
-              <Link href="/birds?tab=mortality">
+              <Link href="/birds/mortality">
                 <Button variant="outline" size="sm" className="w-full">
                   Mortality
+                </Button>
+              </Link>
+              <Link href="/birds/buy">
+                <Button variant="outline" size="sm" className="w-full">
+                  Purchases
+                </Button>
+              </Link>
+              <Link href="/birds/sell">
+                <Button variant="outline" size="sm" className="w-full">
+                  Sales
                 </Button>
               </Link>
             </div>

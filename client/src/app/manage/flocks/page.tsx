@@ -7,11 +7,13 @@ import { useCallback, useEffect, useState } from "react";
 import FlockCard from "./flock-card";
 import { AddFlock } from "./add-flock";
 import { Spinner } from "@/components/ui/spinner";
+import { useFlocks } from "@/store/flocks";
 
 export default function Flocks() {
   const [isLoading, setIsLoading] = useState(true);
   const [flocks, setFlocks] = useState<any>([]);
   const [isAddingFlock, setIsAddingFlock] = useState(false);
+  const { refreshFlocks: refreshGlobalFlocks } = useFlocks();
 
   const fetchFlocks = useCallback(async () => {
     setIsLoading(true);
@@ -33,6 +35,7 @@ export default function Flocks() {
     try {
       await update("flock", id, data);
       fetchFlocks();
+      refreshGlobalFlocks();
     } catch (e) {
       console.error(e);
     }
@@ -43,6 +46,7 @@ export default function Flocks() {
       await create("flock", data);
       setIsAddingFlock(false);
       fetchFlocks();
+      refreshGlobalFlocks();
     } catch (e) {
       console.error(e);
     }

@@ -1,6 +1,5 @@
 "use client";
 
-import { FlockSelector } from "@/components/flock-selector";
 
 import DateRange from "@/components/date-range";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -124,7 +123,6 @@ export default function EggReports() {
         <h1 className="px-4 py-4 text-xl font-semibold">Eggs Production</h1>
       </header>
 
-      <FlockSelector />
 
       <DateRange
         startDate={startDate}

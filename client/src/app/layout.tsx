@@ -3,10 +3,13 @@
 import { Suspense } from "react";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { BottomNav } from "@/components/bottom-nav";
 
 import { FlocksProvider } from "@/store/flocks";
 import { ClerkProvider } from "@clerk/nextjs";
+import { NavigationProvider } from "@/store/navigation";
+import { MainHeader } from "@/components/main-header";
+import { SideDrawer } from "@/components/side-drawer";
+import { FlockProtection } from "@/components/flock-protection";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,10 +44,15 @@ export default function RootLayout({
         </head>
         <body className={inter.className}>
           <Suspense>
-            <FlocksProvider>
-              <main className="min-h-[100dvh] pb-16">{children}</main>
-            </FlocksProvider>
-            <BottomNav />
+            <NavigationProvider>
+              <FlocksProvider>
+                <FlockProtection>
+                  <MainHeader />
+                  <SideDrawer />
+                  <main className="min-h-[100dvh] pt-16">{children}</main>
+                </FlockProtection>
+              </FlocksProvider>
+            </NavigationProvider>
           </Suspense>
         </body>
       </html>
