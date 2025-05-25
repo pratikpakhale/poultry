@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { FlockSelector } from "@/components/flock-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -87,7 +86,6 @@ export default function VaccineManagement() {
         <h1 className="px-4 py-4 text-xl font-semibold">Vaccine Management</h1>
       </header>
 
-      <FlockSelector />
 
       <div className="p-4 space-y-4">
         <Card>

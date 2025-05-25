@@ -1,12 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, ArrowLeft } from "lucide-react";
+import { Menu, ArrowLeft, ChevronDown, Bird, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Breadcrumb } from "./breadcrumb";
 import { useNavigation } from "@/store/navigation";
 import { motion } from "framer-motion";
+import { useFlocks } from "@/store/flocks";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type MainHeaderProps = {
   className?: string;
@@ -16,8 +30,11 @@ export function MainHeader({ className }: MainHeaderProps) {
   const { toggleDrawer, contextActions } = useNavigation();
   const pathname = usePathname();
   const router = useRouter();
+  const { selectedFlock, flocks, setSelectedFlock, isLoading } = useFlocks();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const showBackButton = pathname !== "/";
+  const isSelectFlockPage = pathname.startsWith("/select-flock");
 
   const handleBack = () => {
     router.back();
@@ -53,7 +70,79 @@ export function MainHeader({ className }: MainHeaderProps) {
         <Breadcrumb />
       </div>
 
-      <div className="flex items-center">
+      <div className="flex items-center gap-3">
+        {/* Flock Selector in Header - Hidden on select-flock page */}
+        {flocks && flocks.length > 0 && !isSelectFlockPage && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenu
+                  open={dropdownOpen}
+                  onOpenChange={setDropdownOpen}
+                >
+                  <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-muted hover:bg-muted/50 transition-colors text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                    {selectedFlock ? (
+                      <>
+                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                        <span className="max-w-[120px] truncate">
+                          {selectedFlock.name}
+                        </span>
+                        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-muted-foreground">
+                          Select Flock
+                        </span>
+                        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                      </>
+                    )}
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[200px]">
+                    {isLoading ? (
+                      <DropdownMenuItem disabled>
+                        Loading flocks...
+                      </DropdownMenuItem>
+                    ) : (
+                      <>
+                        {flocks.map((flock) => (
+                          <DropdownMenuItem
+                            key={flock._id}
+                            className={cn(
+                              "flex items-center gap-2 cursor-pointer",
+                              selectedFlock?._id === flock._id && "bg-muted"
+                            )}
+                            onClick={() => {
+                              setSelectedFlock(flock);
+                              setDropdownOpen(false);
+                            }}
+                          >
+                            <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                            <span>{flock.name}</span>
+                          </DropdownMenuItem>
+                        ))}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-primary mt-1 pt-1"
+                          onClick={() => {
+                            router.push("/manage/flocks");
+                            setDropdownOpen(false);
+                          }}
+                        >
+                          Manage Flocks
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Quick switch between flocks</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
         {contextActions && (
           <motion.div
             initial={{ opacity: 0, y: -5 }}

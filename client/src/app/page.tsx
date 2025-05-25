@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect } from "react";
-import { FlockSelector } from "@/components/flock-selector";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigationHistory } from "@/hooks/use-navigation";
@@ -26,8 +25,6 @@ export default function Home() {
           Pakhale Poultry Management
         </h1>
       </header>
-
-      <FlockSelector />
 
       <div className="p-4 space-y-4">
         <Card className="p-4">

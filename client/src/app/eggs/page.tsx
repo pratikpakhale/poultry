@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { FlockSelector } from "@/components/flock-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +27,8 @@ import { create, getAll, remove } from "@/lib/api";
 import { useFlocks } from "@/store/flocks";
 import { Spinner } from "@/components/ui/spinner";
 import { Trash2 } from "lucide-react";
+import { useNavigationHistory } from "@/hooks/use-navigation";
+import { DataTable } from "@/components/ui/data-table";
 
 export default function EggManagement() {
   const searchParams = useSearchParams();
@@ -238,479 +239,231 @@ export default function EggManagement() {
   };
 
   return (
-    <>
-      <header className="border-b">
-        <h1 className="px-4 py-4 text-xl font-semibold">Egg Management</h1>
-      </header>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-6">Egg Management</h1>
 
-      <FlockSelector />
+      <Tabs
+        value={currentTab}
+        onValueChange={setCurrentTab}
+        className="space-y-4"
+      >
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="inventory">Inventory</TabsTrigger>
+          <TabsTrigger value="production">Production</TabsTrigger>
+          <TabsTrigger value="sales">Sales</TabsTrigger>
+          <TabsTrigger value="customers">Customers</TabsTrigger>
+        </TabsList>
 
-      <div className="p-4">
-        <Tabs
-          value={currentTab}
-          onValueChange={setCurrentTab}
-          className="space-y-4"
-        >
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="inventory">Inventory</TabsTrigger>
-            <TabsTrigger value="production">Production</TabsTrigger>
-            <TabsTrigger value="sales">Sales</TabsTrigger>
-            <TabsTrigger value="customers">Customers</TabsTrigger>
-          </TabsList>
+        <TabsContent value="inventory">
+          <Card>
+            <CardHeader>
+              <CardTitle>Current Inventory</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                <span className="text-lg font-medium">
+                  Total Eggs Available
+                </span>
+                <span className="text-2xl font-bold">
+                  {selectedFlock?.eggs}
+                </span>
+              </div>
 
-          <TabsContent value="inventory">
-            <Card>
-              <CardHeader>
-                <CardTitle>Current Inventory</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                  <span className="text-lg font-medium">
-                    Total Eggs Available
-                  </span>
-                  <span className="text-2xl font-bold">
-                    {selectedFlock?.eggs}
-                  </span>
+              <div className="space-y-2">
+                <h3 className="font-medium">Recent Activity</h3>
+                {isLoading && <Spinner />}
+                {!isLoading && (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead className="text-right">Additional</TableHead>
+                        <TableHead className="text-right">Quantity</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {recentActivity.map((activity, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            {format(activity.date, "MMM dd")}
+                          </TableCell>
+                          <TableCell>{activity.category}</TableCell>
+                          <TableCell className="text-right">
+                            {activity.additional}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {activity.quantity}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="production">
+          <Card>
+            <CardHeader>
+              <CardTitle>Add Production</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="production-date">Date</Label>
+                  <Input
+                    type="date"
+                    id="production-date"
+                    value={newProduction.date}
+                    onChange={(e) =>
+                      setNewProduction({
+                        ...newProduction,
+                        date: e.target.value,
+                      })
+                    }
+                    required
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <h3 className="font-medium">Recent Activity</h3>
-                  {isLoading && <Spinner />}
-                  {!isLoading && (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Category</TableHead>
-                          <TableHead className="text-right">
-                            Additional
-                          </TableHead>
-                          <TableHead className="text-right">Quantity</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {recentActivity.map((activity, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              {format(activity.date, "MMM dd")}
-                            </TableCell>
-                            <TableCell>{activity.category}</TableCell>
-                            <TableCell className="text-right">
-                              {activity.additional}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              {activity.quantity}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  )}
+                  <Label htmlFor="egg-count">Number of Eggs</Label>
+                  <Input
+                    type="number"
+                    id="egg-count"
+                    placeholder="Enter quantity"
+                    value={newProduction.quantity}
+                    onChange={(e) =>
+                      setNewProduction({
+                        ...newProduction,
+                        quantity: e.target.value,
+                      })
+                    }
+                    required
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
 
-          <TabsContent value="production">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add Production</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <form className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="production-date">Date</Label>
-                    <Input
-                      type="date"
-                      id="production-date"
-                      value={newProduction.date}
-                      onChange={(e) =>
-                        setNewProduction({
-                          ...newProduction,
-                          date: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="egg-count">Number of Eggs</Label>
-                    <Input
-                      type="number"
-                      id="egg-count"
-                      placeholder="Enter quantity"
-                      value={newProduction.quantity}
-                      onChange={(e) =>
-                        setNewProduction({
-                          ...newProduction,
-                          quantity: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="egg-type">Type</Label>
-                    <Select
-                      value={newProduction.type}
-                      onValueChange={(e) =>
-                        setNewProduction({ ...newProduction, type: e })
-                      }
-                      required
-                    >
-                      <SelectTrigger id="egg-type">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="normal">Normal</SelectItem>
-                        <SelectItem value="cracked">Cracked</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </form>
-
-                <Button
-                  className="w-full"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNewProduction();
-                  }}
-                >
-                  Add Production
-                </Button>
-              </CardContent>
-            </Card>
-            {isLoading && <Spinner />}
-
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle>Recent Productions</CardTitle>
-              </CardHeader>
-              {!isLoading && (
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Type</TableHead>
-                        <TableHead className="text-right">Quantity</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {productions.map((production: any) => (
-                        <TableRow key={production._id}>
-                          <TableCell>
-                            {format(new Date(production.date), "dd/MM/yyyy")}
-                          </TableCell>
-                          <TableCell>
-                            {production.type === "normal"
-                              ? "Normal"
-                              : "Cracked"}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {production.quantity}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant={"ghost"}
-                              onClick={() =>
-                                handleDeleteProduction(production._id)
-                              }
-                            >
-                              <Trash2 size={16} color="red" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              )}
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="sales">
-            <Card>
-              <CardHeader>
-                <CardTitle>Record Sale</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <form className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="sale-date">Date</Label>
-                    <Input
-                      type="date"
-                      id="sale-date"
-                      value={newSale.date}
-                      onChange={(e) =>
-                        setNewSale({
-                          ...newSale,
-                          date: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="customer">Customer</Label>
-                    <div className="flex gap-2">
-                      <Select
-                        value={newSale.customer}
-                        onValueChange={(value) =>
-                          setNewSale({
-                            ...newSale,
-                            customer: value,
-                          })
-                        }
-                        required
-                      >
-                        <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Select customer" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {customers.map((customer: any) => (
-                            <SelectItem key={customer._id} value={customer._id}>
-                              {customer.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="quantity">Quantity of Eggs</Label>
-                    <Input
-                      type="number"
-                      id="quantity"
-                      placeholder="Enter quantity"
-                      value={newSale.quantity}
-                      onChange={(e) =>
-                        setNewSale({
-                          ...newSale,
-                          quantity: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="rate">Rate per 100 eggs</Label>
-                    <Input
-                      type="number"
-                      id="rate"
-                      placeholder="Enter rate per 100 eggs"
-                      value={newSale.rate}
-                      onChange={(e) =>
-                        setNewSale({
-                          ...newSale,
-                          rate: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="rounded-lg bg-muted p-4">
-                    <div className="flex justify-between">
-                      <span>Total Amount</span>
-                      <span className="font-bold">
-                        ₹{calculateTotalSale().toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="amountPaid">Amount Paid</Label>
-                    <Input
-                      type="number"
-                      id="amountPaid"
-                      placeholder={`Enter amount paid (default: ${calculateTotalSale().toFixed(
-                        2
-                      )})`}
-                      value={newSale.amountPaid}
-                      onChange={(e) =>
-                        setNewSale({
-                          ...newSale,
-                          amountPaid: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-
-                  <Button
-                    className="w-full"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleNewSale();
-                    }}
+                <div className="space-y-2">
+                  <Label htmlFor="egg-type">Type</Label>
+                  <Select
+                    value={newProduction.type}
+                    onValueChange={(e) =>
+                      setNewProduction({ ...newProduction, type: e })
+                    }
+                    required
                   >
-                    Record Sale
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                    <SelectTrigger id="egg-type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="normal">Normal</SelectItem>
+                      <SelectItem value="cracked">Cracked</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </form>
 
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-              </CardHeader>
-              {isLoading && <Spinner />}
-              {!isLoading && (
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead className="text-right">Quantity</TableHead>
-                        <TableHead className="text-right">Rate</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                        <TableHead className="text-right">Payment</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {sales.map((sale: any) => (
-                        <TableRow key={sale._id}>
-                          <TableCell>
-                            {format(new Date(sale.date), "dd/MM/yyyy")}
-                          </TableCell>
-                          <TableCell>{sale.customer?.name}</TableCell>
-                          <TableCell className="text-right">
-                            {sale.quantity}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ₹{sale.rate / 100}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ₹{((sale.quantity * sale.rate) / 100).toFixed(2)}
-                          </TableCell>
-                          <TableCell
-                            className={`text-right ${
-                              getPaymentStatus(sale) !== "Exact"
-                                ? parseFloat(getPaymentStatus(sale)) < 0
-                                  ? "text-red-500"
-                                  : "text-green-500"
-                                : ""
-                            }`}
+              <Button
+                className="w-full"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNewProduction();
+                }}
+              >
+                Add Production
+              </Button>
+            </CardContent>
+          </Card>
+          {isLoading && <Spinner />}
+
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Recent Productions</CardTitle>
+            </CardHeader>
+            {!isLoading && (
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead className="text-right">Quantity</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {productions.map((production: any) => (
+                      <TableRow key={production._id}>
+                        <TableCell>
+                          {format(new Date(production.date), "dd/MM/yyyy")}
+                        </TableCell>
+                        <TableCell>
+                          {production.type === "normal" ? "Normal" : "Cracked"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {production.quantity}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant={"ghost"}
+                            onClick={() =>
+                              handleDeleteProduction(production._id)
+                            }
                           >
-                            ₹{sale.amountPaid.toFixed(2)} (
-                            {getPaymentStatus(sale)})
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Button
-                              variant={"ghost"}
-                              onClick={() => handleDeleteSale(sale._id)}
-                            >
-                              <Trash2 size={16} color="red" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              )}
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="customers">
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Customer</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <form className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="customer-name">Customer Name</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        type="text"
-                        id="customer-name"
-                        placeholder="Enter customer name"
-                        value={newCustomer.name}
-                        onChange={(e) =>
-                          setNewCustomer({
-                            ...newCustomer,
-                            name: e.target.value,
-                          })
-                        }
-                        className="flex-1"
-                        required
-                      />
-                      <Button onClick={handleNewCustomer}>Add</Button>
-                    </div>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle>Customer Balances</CardTitle>
-              </CardHeader>
-              {isLoading && <Spinner />}
-              {!isLoading && (
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Customer Name</TableHead>
-                        <TableHead className="text-right">Balance</TableHead>
+                            <Trash2 size={16} color="red" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {customers.map((customer: any) => (
-                        <TableRow key={customer._id}>
-                          <TableCell>{customer.name}</TableCell>
-                          <TableCell
-                            className={`text-right ${
-                              customer.balance < 0
-                                ? "text-red-500"
-                                : customer.balance > 0
-                                ? "text-green-500"
-                                : ""
-                            }`}
-                          >
-                            ₹{customer.balance.toFixed(2)}
-                            {customer.balance < 0
-                              ? " (due)"
-                              : customer.balance > 0
-                              ? " (advance)"
-                              : ""}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              )}
-            </Card>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            )}
+          </Card>
+        </TabsContent>
 
-            <Card className="mt-4">
-              <CardHeader>
-                <CardTitle>Customer Sales History</CardTitle>
-              </CardHeader>
-              {isLoading && <Spinner />}
-              {!isLoading && (
-                <CardContent>
-                  <div className="space-y-2">
-                    <Label htmlFor="customer-filter">Filter by Customer</Label>
+        <TabsContent value="sales">
+          <Card>
+            <CardHeader>
+              <CardTitle>Record Sale</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="sale-date">Date</Label>
+                  <Input
+                    type="date"
+                    id="sale-date"
+                    value={newSale.date}
+                    onChange={(e) =>
+                      setNewSale({
+                        ...newSale,
+                        date: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="customer">Customer</Label>
+                  <div className="flex gap-2">
                     <Select
-                      value={selectedCustomerFilter}
-                      onValueChange={setSelectedCustomerFilter}
+                      value={newSale.customer}
+                      onValueChange={(value) =>
+                        setNewSale({
+                          ...newSale,
+                          customer: value,
+                        })
+                      }
+                      required
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="flex-1">
                         <SelectValue placeholder="Select customer" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all">All Customers</SelectItem>
                         {customers.map((customer: any) => (
                           <SelectItem key={customer._id} value={customer._id}>
                             {customer.name}
@@ -719,52 +472,290 @@ export default function EggManagement() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
 
-                  <Table className="mt-4">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead className="text-right">Quantity</TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
-                        <TableHead className="text-right">Payment</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {getFilteredSales().map((sale: any) => (
-                        <TableRow key={sale._id}>
-                          <TableCell>
-                            {format(new Date(sale.date), "dd/MM/yyyy")}
-                          </TableCell>
-                          <TableCell>{sale.customer?.name}</TableCell>
-                          <TableCell className="text-right">
-                            {sale.quantity}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ₹{((sale.quantity * sale.rate) / 100).toFixed(2)}
-                          </TableCell>
-                          <TableCell
-                            className={`text-right ${
-                              getPaymentStatus(sale) !== "Exact"
-                                ? parseFloat(getPaymentStatus(sale)) < 0
-                                  ? "text-red-500"
-                                  : "text-green-500"
-                                : ""
-                            }`}
+                <div className="space-y-2">
+                  <Label htmlFor="quantity">Quantity of Eggs</Label>
+                  <Input
+                    type="number"
+                    id="quantity"
+                    placeholder="Enter quantity"
+                    value={newSale.quantity}
+                    onChange={(e) =>
+                      setNewSale({
+                        ...newSale,
+                        quantity: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="rate">Rate per 100 eggs</Label>
+                  <Input
+                    type="number"
+                    id="rate"
+                    placeholder="Enter rate per 100 eggs"
+                    value={newSale.rate}
+                    onChange={(e) =>
+                      setNewSale({
+                        ...newSale,
+                        rate: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                </div>
+
+                <div className="rounded-lg bg-muted p-4">
+                  <div className="flex justify-between">
+                    <span>Total Amount</span>
+                    <span className="font-bold">
+                      ₹{calculateTotalSale().toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="amountPaid">Amount Paid</Label>
+                  <Input
+                    type="number"
+                    id="amountPaid"
+                    placeholder={`Enter amount paid (default: ${calculateTotalSale().toFixed(
+                      2
+                    )})`}
+                    value={newSale.amountPaid}
+                    onChange={(e) =>
+                      setNewSale({
+                        ...newSale,
+                        amountPaid: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <Button
+                  className="w-full"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleNewSale();
+                  }}
+                >
+                  Record Sale
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Recent Sales</CardTitle>
+            </CardHeader>
+            {isLoading && <Spinner />}
+            {!isLoading && (
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Customer</TableHead>
+                      <TableHead className="text-right">Quantity</TableHead>
+                      <TableHead className="text-right">Rate</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Payment</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sales.map((sale: any) => (
+                      <TableRow key={sale._id}>
+                        <TableCell>
+                          {format(new Date(sale.date), "dd/MM/yyyy")}
+                        </TableCell>
+                        <TableCell>{sale.customer?.name}</TableCell>
+                        <TableCell className="text-right">
+                          {sale.quantity}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ₹{sale.rate / 100}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ₹{((sale.quantity * sale.rate) / 100).toFixed(2)}
+                        </TableCell>
+                        <TableCell
+                          className={`text-right ${
+                            getPaymentStatus(sale) !== "Exact"
+                              ? parseFloat(getPaymentStatus(sale)) < 0
+                                ? "text-red-500"
+                                : "text-green-500"
+                              : ""
+                          }`}
+                        >
+                          ₹{sale.amountPaid.toFixed(2)} (
+                          {getPaymentStatus(sale)})
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant={"ghost"}
+                            onClick={() => handleDeleteSale(sale._id)}
                           >
-                            ₹{sale.amountPaid.toFixed(2)} (
-                            {getPaymentStatus(sale)})
-                          </TableCell>
-                        </TableRow>
+                            <Trash2 size={16} color="red" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            )}
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="customers">
+          <Card>
+            <CardHeader>
+              <CardTitle>Add New Customer</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="customer-name">Customer Name</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      id="customer-name"
+                      placeholder="Enter customer name"
+                      value={newCustomer.name}
+                      onChange={(e) =>
+                        setNewCustomer({
+                          ...newCustomer,
+                          name: e.target.value,
+                        })
+                      }
+                      className="flex-1"
+                      required
+                    />
+                    <Button onClick={handleNewCustomer}>Add</Button>
+                  </div>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Customer Balances</CardTitle>
+            </CardHeader>
+            {isLoading && <Spinner />}
+            {!isLoading && (
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Customer Name</TableHead>
+                      <TableHead className="text-right">Balance</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {customers.map((customer: any) => (
+                      <TableRow key={customer._id}>
+                        <TableCell>{customer.name}</TableCell>
+                        <TableCell
+                          className={`text-right ${
+                            customer.balance < 0
+                              ? "text-red-500"
+                              : customer.balance > 0
+                              ? "text-green-500"
+                              : ""
+                          }`}
+                        >
+                          ₹{customer.balance.toFixed(2)}
+                          {customer.balance < 0
+                            ? " (due)"
+                            : customer.balance > 0
+                            ? " (advance)"
+                            : ""}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            )}
+          </Card>
+
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Customer Sales History</CardTitle>
+            </CardHeader>
+            {isLoading && <Spinner />}
+            {!isLoading && (
+              <CardContent>
+                <div className="space-y-2">
+                  <Label htmlFor="customer-filter">Filter by Customer</Label>
+                  <Select
+                    value={selectedCustomerFilter}
+                    onValueChange={setSelectedCustomerFilter}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select customer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Customers</SelectItem>
+                      {customers.map((customer: any) => (
+                        <SelectItem key={customer._id} value={customer._id}>
+                          {customer.name}
+                        </SelectItem>
                       ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              )}
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Table className="mt-4">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Customer</TableHead>
+                      <TableHead className="text-right">Quantity</TableHead>
+                      <TableHead className="text-right">Amount</TableHead>
+                      <TableHead className="text-right">Payment</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {getFilteredSales().map((sale: any) => (
+                      <TableRow key={sale._id}>
+                        <TableCell>
+                          {format(new Date(sale.date), "dd/MM/yyyy")}
+                        </TableCell>
+                        <TableCell>{sale.customer?.name}</TableCell>
+                        <TableCell className="text-right">
+                          {sale.quantity}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ₹{((sale.quantity * sale.rate) / 100).toFixed(2)}
+                        </TableCell>
+                        <TableCell
+                          className={`text-right ${
+                            getPaymentStatus(sale) !== "Exact"
+                              ? parseFloat(getPaymentStatus(sale)) < 0
+                                ? "text-red-500"
+                                : "text-green-500"
+                              : ""
+                          }`}
+                        >
+                          ₹{sale.amountPaid.toFixed(2)} (
+                          {getPaymentStatus(sale)})
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            )}
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }

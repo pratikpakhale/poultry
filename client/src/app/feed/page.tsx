@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { FlockSelector } from "@/components/flock-selector";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -188,7 +187,6 @@ export default function FeedManagement() {
         <h1 className="px-4 py-4 text-xl font-semibold">Feed Management</h1>
       </header>
 
-      <FlockSelector />
 
       <div className="p-4">
         <Tabs defaultValue={defaultTab} className="space-y-4">

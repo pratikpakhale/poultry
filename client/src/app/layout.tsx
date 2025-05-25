@@ -9,6 +9,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { NavigationProvider } from "@/store/navigation";
 import { MainHeader } from "@/components/main-header";
 import { SideDrawer } from "@/components/side-drawer";
+import { FlockProtection } from "@/components/flock-protection";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -45,9 +46,11 @@ export default function RootLayout({
           <Suspense>
             <NavigationProvider>
               <FlocksProvider>
-                <MainHeader />
-                <SideDrawer />
-                <main className="min-h-[100dvh] pt-16">{children}</main>
+                <FlockProtection>
+                  <MainHeader />
+                  <SideDrawer />
+                  <main className="min-h-[100dvh] pt-16">{children}</main>
+                </FlockProtection>
               </FlocksProvider>
             </NavigationProvider>
           </Suspense>
