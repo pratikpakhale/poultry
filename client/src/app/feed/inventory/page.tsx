@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,7 +23,8 @@ import {
 } from "@/components/ui/table";
 import { create, getAll, remove } from "@/lib/api";
 import { format } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { AlertTriangle, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -206,6 +208,20 @@ export default function InventoryPage() {
                 <div className="flex items-center justify-center p-4">
                   <Spinner />
                 </div>
+              ) : materials.length === 0 ? (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>No materials found</AlertTitle>
+                  <AlertDescription>
+                    You need to add materials before recording material use.{" "}
+                    <Link
+                      href="/manage/materials"
+                      className="underline font-medium"
+                    >
+                      Add new material
+                    </Link>
+                  </AlertDescription>
+                </Alert>
               ) : (
                 <Select
                   value={deductMaterial.material}

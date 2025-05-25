@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FlockRequired } from "@/components/flock-required";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,10 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import { create, getAll } from "@/lib/api";
 import { useFlocks } from "@/store/flocks";
-import { FlockRequired } from "@/components/flock-required";
-import { Spinner } from "@/components/ui/spinner";
+import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AddSalePage() {
   const router = useRouter();
@@ -108,6 +111,20 @@ export default function AddSalePage() {
               <div className="flex justify-center py-4">
                 <Spinner />
               </div>
+            ) : customers.length === 0 ? (
+              <Alert variant="destructive" className="mb-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertTitle>No customers found</AlertTitle>
+                <AlertDescription>
+                  You need to add customers before recording a sale.{" "}
+                  <Link
+                    href="/eggs/customers/new"
+                    className="underline font-medium"
+                  >
+                    Add a new customer
+                  </Link>
+                </AlertDescription>
+              </Alert>
             ) : (
               <form className="space-y-4" onSubmit={handleNewSale}>
                 <div className="space-y-2">

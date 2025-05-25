@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { create, getAll } from "@/lib/api";
+import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -115,6 +118,20 @@ export default function AddProductionPage() {
                 <div className="flex items-center justify-center p-4">
                   <Spinner />
                 </div>
+              ) : formulas.length === 0 ? (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>No formulas found</AlertTitle>
+                  <AlertDescription>
+                    You need to add feed formulas before recording production.{" "}
+                    <Link
+                      href="/manage/feed-formulas/new"
+                      className="underline font-medium"
+                    >
+                      Create a new formula
+                    </Link>
+                  </AlertDescription>
+                </Alert>
               ) : (
                 <Select
                   value={selectedFormula}

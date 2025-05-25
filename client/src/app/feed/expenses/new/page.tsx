@@ -1,5 +1,6 @@
 "use client";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,8 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { create, getAll } from "@/lib/api";
+import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -120,6 +123,20 @@ export default function AddExpensePage() {
                 <div className="flex items-center justify-center p-4">
                   <Spinner />
                 </div>
+              ) : materials.length === 0 ? (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>No materials found</AlertTitle>
+                  <AlertDescription>
+                    You need to add materials before recording a purchase.{" "}
+                    <Link
+                      href="/manage/materials"
+                      className="underline font-medium"
+                    >
+                      Add new material
+                    </Link>
+                  </AlertDescription>
+                </Alert>
               ) : (
                 <Select
                   value={purchaseMaterial.material}

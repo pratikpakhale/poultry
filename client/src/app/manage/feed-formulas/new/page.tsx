@@ -2,7 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -11,19 +21,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { create, getAll } from "@/lib/api";
-import { useCallback, useEffect, useState } from "react";
-import { X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { AlertTriangle, X } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 export default function AddFormula() {
   const router = useRouter();
@@ -147,7 +149,22 @@ export default function AddFormula() {
 
                 <div className="border-b" />
 
-                {!isLoading &&
+                {!isLoading && materials.length === 0 ? (
+                  <Alert variant="destructive" className="mb-4 mt-4">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle>No materials found</AlertTitle>
+                    <AlertDescription>
+                      You need to add materials before creating a formula.{" "}
+                      <Link
+                        href="/manage/materials"
+                        className="underline font-medium"
+                      >
+                        Add new material
+                      </Link>
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  !isLoading &&
                   materials.some((material: any) => {
                     const usedMaterials = newFormula.materials.map(
                       (m: any) => m.material
@@ -222,7 +239,8 @@ export default function AddFormula() {
                         Add
                       </Button>
                     </div>
-                  )}
+                  )
+                )}
               </CardContent>
             </Card>
           </div>
