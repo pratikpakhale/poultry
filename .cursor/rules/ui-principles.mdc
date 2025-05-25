@@ -1,0 +1,47 @@
+---
+description: 
+globs: client/**/*.tsx
+alwaysApply: false
+---
+# UI/UX Principles for Non-Technical Users
+
+Since this application targets non-technical poultry farmers, all UI development should follow these principles: This is purely mobile friendly application.
+
+## Simplicity
+
+- Use clear, simple language (avoid technical jargon)
+- Minimize the number of steps to complete tasks
+- Provide obvious navigation paths
+- Use progressive disclosure for advanced features
+
+## Intuitive Design
+
+- Follow familiar UI patterns (forms, tables, dashboards)
+- Use consistent layouts across the application
+- Provide meaningful feedback for actions
+- Use visual cues and icons to enhance understanding
+
+## Error Prevention & Recovery
+
+- Validate inputs as early as possible
+- Provide clear error messages in simple language
+- Offer guidance on how to fix issues
+- Include fallback options for when features fail
+
+## Accessibility
+
+- Support various screen sizes (responsive design)
+- Ensure adequate color contrast
+- Provide text alternatives for non-text content
+- Support keyboard navigation
+
+## Performance
+
+- Minimize loading times and data fetching
+- Provide visual feedback during longer operations
+- Cache frequently accessed data
+- Implement offline functionality where possible
+
+## Technology
+
+- Nextjs with ShadCN and TailwindCSS
