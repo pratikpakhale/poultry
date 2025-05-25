@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { BottomNav } from "@/components/bottom-nav";
+import { useEffect } from "react";
 import { FlockSelector } from "@/components/flock-selector";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useNavigationHistory } from "@/hooks/use-navigation";
 import {
   Bird,
   Egg,
@@ -15,6 +16,9 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  // Register this page in navigation history
+  useNavigationHistory();
+
   return (
     <>
       <header className="border-b">
