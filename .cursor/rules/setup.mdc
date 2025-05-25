@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- To install something use `pnpm`
+- Do not start the `dev` because they are always running out of context

@@ -1,19 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import { Menu, ArrowLeft, ChevronDown, Bird, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Breadcrumb } from "./breadcrumb";
-import { useNavigation } from "@/store/navigation";
-import { motion } from "framer-motion";
-import { useFlocks } from "@/store/flocks";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
@@ -21,6 +13,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { useFlocks } from "@/store/flocks";
+import { useNavigation } from "@/store/navigation";
+import { motion } from "framer-motion";
+import { ArrowLeft, ChevronDown, Menu } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { Button } from "./ui/button";
 
 type MainHeaderProps = {
   className?: string;
@@ -35,6 +35,23 @@ export function MainHeader({ className }: MainHeaderProps) {
 
   const showBackButton = pathname !== "/";
   const isSelectFlockPage = pathname.startsWith("/select-flock");
+
+  // Get the back label based on current path
+  const getBackLabel = () => {
+    const segments = pathname.split("/").filter(Boolean);
+
+    // If we're more than one level deep, we go back to the parent
+    if (segments.length > 1) {
+      const parentSegment = segments[segments.length - 2];
+      return parentSegment
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
+    }
+
+    // If we're one level deep, we go back to Home
+    return "Home";
+  };
 
   const handleBack = () => {
     router.back();
@@ -60,16 +77,18 @@ export function MainHeader({ className }: MainHeaderProps) {
 
         {/* Show back button on non-homepage */}
         {showBackButton && (
-          <button
+          <Button
+            variant={"outline"}
             onClick={handleBack}
-            className="mr-2 p-2 rounded-full hover:bg-muted"
+            className="mr-2 gap-2 hover:bg-muted"
             aria-label="Go back"
           >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to {getBackLabel()}</span>
+          </Button>
         )}
 
-        <Breadcrumb />
+        {/* <Breadcrumb /> */}
       </div>
 
       <div className="flex items-center gap-3">
