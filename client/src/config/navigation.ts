@@ -9,6 +9,7 @@ import {
   Pill,
   Scale,
   Sprout,
+  Store,
   Users,
   Wheat,
 } from "lucide-react";
@@ -34,6 +35,11 @@ export const navigationConfig: NavItem[] = [
     icon: Bird,
     children: [
       {
+        title: "Inventory",
+        path: "/birds/inventory",
+        icon: Store,
+      },
+      {
         title: "Purchases",
         path: "/birds/buy",
         icon: DollarSign,
@@ -55,6 +61,11 @@ export const navigationConfig: NavItem[] = [
     path: "/eggs",
     icon: Egg,
     children: [
+      {
+        title: "Inventory",
+        path: "/eggs/inventory",
+        icon: Store,
+      },
       {
         title: "Production",
         path: "/eggs/production",
