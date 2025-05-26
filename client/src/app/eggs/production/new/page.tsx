@@ -35,11 +35,6 @@ export default function AddProductionPage() {
       return;
     }
 
-    if (!newProduction.quantity || Number(newProduction.quantity) <= 0) {
-      alert("Please enter a valid quantity");
-      return;
-    }
-
     const response = await create("eggsProduction", {
       ...newProduction,
       flock: selectedFlock?._id,

@@ -28,17 +28,6 @@ export default function AddBirdPurchasePage() {
   }, [newPurchase.quantity, newPurchase.rate]);
 
   const handleNewPurchase = async () => {
-    // Validation
-    if (!newPurchase.quantity || Number(newPurchase.quantity) <= 0) {
-      alert("Please enter a valid quantity");
-      return;
-    }
-
-    if (!newPurchase.rate || Number(newPurchase.rate) <= 0) {
-      alert("Please enter a valid rate");
-      return;
-    }
-
     const response = await create("birdPurchase", {
       ...newPurchase,
       flock: selectedFlock?._id,

@@ -58,16 +58,6 @@ export default function AddExpensePage() {
       return;
     }
 
-    if (!purchaseMaterial.quantity || Number(purchaseMaterial.quantity) <= 0) {
-      alert("Please enter a valid quantity");
-      return;
-    }
-
-    if (!purchaseMaterial.cost || Number(purchaseMaterial.cost) <= 0) {
-      alert("Please enter a valid cost");
-      return;
-    }
-
     const response = await create("feedPurchase", {
       date: purchaseMaterial.date,
       material: purchaseMaterial.material,

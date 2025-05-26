@@ -21,12 +21,6 @@ export default function AddMortalityPage() {
   });
 
   const handleNewMortality = async () => {
-    // Validation
-    if (!newMortality.quantity || Number(newMortality.quantity) <= 0) {
-      alert("Please enter a valid quantity");
-      return;
-    }
-
     const response = await create("birdMortality", {
       ...newMortality,
       flock: selectedFlock?._id,

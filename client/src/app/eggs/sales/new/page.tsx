@@ -66,16 +66,6 @@ export default function AddSalePage() {
       return;
     }
 
-    if (!newSale.quantity || Number(newSale.quantity) <= 0) {
-      alert("Please enter a valid quantity");
-      return;
-    }
-
-    if (!newSale.rate || Number(newSale.rate) <= 0) {
-      alert("Please enter a valid rate");
-      return;
-    }
-
     // Set amount paid to total if not specified
     const saleData = { ...newSale };
     const saleAmount = calculateTotalSale();

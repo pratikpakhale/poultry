@@ -93,11 +93,6 @@ export default function InventoryPage() {
       return;
     }
 
-    if (!deductMaterial.quantity || Number(deductMaterial.quantity) <= 0) {
-      alert("Please enter a valid quantity");
-      return;
-    }
-
     const response = await create("feedSale", {
       date: deductMaterial.date,
       material: deductMaterial.material,

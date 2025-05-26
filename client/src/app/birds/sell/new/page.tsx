@@ -28,17 +28,6 @@ export default function AddBirdSalePage() {
   }, [newSale.quantity, newSale.rate]);
 
   const handleNewSale = async () => {
-    // Validation
-    if (!newSale.quantity || Number(newSale.quantity) <= 0) {
-      alert("Please enter a valid quantity");
-      return;
-    }
-
-    if (!newSale.rate || Number(newSale.rate) <= 0) {
-      alert("Please enter a valid rate");
-      return;
-    }
-
     // Check if we have enough birds to sell
     if (
       selectedFlock &&
