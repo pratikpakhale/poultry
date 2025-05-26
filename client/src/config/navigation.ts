@@ -36,7 +36,7 @@ export const navigationConfig: NavItem[] = [
     children: [
       {
         title: "Inventory",
-        path: "/birds/inventory",
+        path: "/birds",
         icon: Store,
       },
       {
